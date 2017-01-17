@@ -1,11 +1,11 @@
 # Project title    
 
-### Author: ANTdrew D. Nguyen     
-### Ecological Genomics:   
+### Author: Stephen Keller     
+### Ecological Genomics 2017:   
 
-## Overall Description of notebook   
+## Overall Description of notebook (fill in with description)  
 
-## Date started: (year-month-day)   
+## Date started: (2017-01-17)   
 ## Date end:   (year-month-day)    
 
 ## Philosophy   
@@ -17,8 +17,8 @@ It is absolutely critical for your future self and others to follow your work. T
 
 
 ### Table of contents for 60 entries (Format is *Page: Date(with year-month-day). Title*)        
-* [Page 1: 2017-01-12](#id-section1). Title
-* [Page 2: 2016-6-16](#id-section2). Title 3
+* [Page 1: 2017-01-17](#id-section1). Initial entry
+* [Page 2:](#id-section2).
 * [Page 3:](#id-section3).
 * [Page 4:](#id-section4).
 * [Page 5:](#id-section5).
@@ -80,12 +80,21 @@ It is absolutely critical for your future self and others to follow your work. T
 
 ------
 <div id='id-section1'/>
-### Page 1: 2016-07-08.  test
+### Page 1: 2017-01-17.  Initial entry   
+
+
+To embed an image, start with the "!", then [], then the URL in ()
+```
+![](URL)
+```
+![](https://cloud.githubusercontent.com/assets/12184909/22031778/c2232e86-dcaf-11e6-90c9-782206dcd824.png)
+
+This image is a fastqc plot of Brittany's spruce GBS data
 
 
 ------
 <div id='id-section2'/>
-### Page 2: 2016-06-16 title 
+### Page 2: 
 ------
 <div id='id-section3'/>
 ### Page 3:
