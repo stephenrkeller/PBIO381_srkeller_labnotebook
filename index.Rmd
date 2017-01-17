@@ -3,5 +3,9 @@ title: "README"
 output: html_document
 ---
 
-
-[online notebook](https://github.com/stephenrkeller/PBIO381_srkeller_labnotebook/blob/master/Online_notebook.md)
+# list of components of the project/repo
+* [online notebook](https://github.com/stephenrkeller/PBIO381_srkeller_labnotebook/blob/master/Online_notebook.md)    
+* index.Rmd :this renders the markdown text into an html format to explain the overall format   
+* Data/:     
+    * Data.csv: csv file for dat   
+  
