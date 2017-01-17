@@ -91,6 +91,36 @@ To embed an image, start with the "!", then [], then the URL in ()
 
 This image is a fastqc plot of Brittany's spruce GBS data
 
+Here's an example of pasting output from the commandline:
+
+```
+stephen@Wright:.../Centaurea_GBS/fastq$ zcat srkeller_GBS_20160812_C1_keller_R1_001.fastq.gz | head
+@HISEQ:140:160817_SNL128_0140_AC96CYACXX:8:1101:1425:1938 1:N:0:
+NTTGTGACAGCTTCCTGAAAATCAAACAAAGAAATTAACAAACCGATCATGAGATCGGTAGACTTAATTCATGAGAGATTTACCTGAAAAAACGTGGCAGA
++
+#0<<BBFFFFFFFFFFFFBFBFFFBBBBF0F<FBFIFFFFFBFFF7BFFIIIBBBFBFBFFFF<BFFFBFBFFBBBBBBBBBFBBBBBB<B<BBBBBBBBB
+@HISEQ:140:160817_SNL128_0140_AC96CYACXX:8:1101:1398:1945 1:N:0:
+NATGTCAGCGCTTCATGAAGCGCACCGGCAAGATGCCCAACATGATCCACGTCGGCACCTATTCGGCGGTGCTGAGATCGGAAGAGCGGTTCAGCAGGAAT
++
+#0<FFFFFFFFFFIIIIIIIIIIIIIIIIIFFIFIIIIIFFIFIIIIFFFFFBFFFBFFBFFFFFFFFF0<BFF<7BBBFFFBBFBBFF77BBFBBFFFF<
+@HISEQ:140:160817_SNL128_0140_AC96CYACXX:8:1101:1292:1959 1:N:0:
+NCGGTAATACAGCGCCGACATGGAGCCCCTGCTGTAGCCATGGCTTGCTGGTTGCCCTCAATCCGGCCTAGTCAGCTGAGATCGGAAGAGCGGTTCAGCAG
+stephen@Wright:.../Centaurea_GBS/fastq$ ll
+total 12991974
+drwxrwx--- 2 stephen klab           0 Jan  6 15:32 ./
+drwxrwx--- 2 stephen klab           0 Jan 12 15:00 ../
+drwxrwx--- 2 stephen klab           0 Jan  6 13:43 distribs/
+-rw-rw---- 1 stephen klab        4096 Dec 22 12:36 ._.DS_Store
+-rw-rw---- 1 stephen klab       10244 Jan 12 16:57 .DS_Store
+drwxrwx--- 2 stephen klab           0 Jan  6 15:32 fastqc/
+drwxrwx--- 2 stephen klab           0 Jan  5 17:33 old/
+drwxrwx--- 2 stephen klab           0 Jan 12 16:57 parsed/
+-rw-rw---- 1 stephen klab 13303765656 Jan  5 21:52 srkeller_GBS_20160812_C1_keller_R1_001.fastq.gz
+drwxrwx--- 2 stephen klab           0 Jan  6 13:41 summaries/
+stephen@Wright:.../Centaurea_GBS/fastq$ 
+
+```
+
 
 ------
 <div id='id-section2'/>
