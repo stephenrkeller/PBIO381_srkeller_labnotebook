@@ -120,3 +120,149 @@ total 4
 [srkeller@pbio381 mydata]$ 
 ```
 
+- Let's take a peek at this file with the **head** command, which prints the first 10 lines to screen.
+
+```bash
+[srkeller@pbio381 mydata]$ head ssw_samples.txt 
+Individual	Trajectory	Location	Day3	Day6	Day9	Day12	Day15
+10	HH	INT	10_5-08_H	10_5-11_H	10_5-14_H	10_5-17_H	10_5-20_H
+24	HH	INT	24_5-08_H	24_5-11_H	24_5-14_H	24_5-17_H	24_5-20_H
+27	HH	INT	27_5-08_H	27_5-11_H	27_5-14_H	27_5-17_H	27_5-20_H
+08	HS	INT	08_5-08_H	08_5-11_S	08_5-14_S	08_5-17_S	08_5-20_S
+09	HS	INT	09_5-08_H		09_5-14_S	09_5-17_S	09_5-20_S
+15	HS	INT	15_5-08_H	15_5-11_H	15_5-14_H	15_5-17_S	15_5-20_S
+19	HS	INT		19_5-11_H	19_5-14_H	19_5-17_H	19_5-20_S
+20	HS	INT	20_5-08_H	20_5-11_H	20_5-14_H	20_5-17_H	20_5-20_S
+03	SS	INT	03_5-08_S	03_5-11_S
+```
+
+- The **tail** command provides similar functionality, but prints just the last lines in the file. These features may not seem a big deal right now, but when you're dealing with files that are 20 Gb compressed, and feature hundreds of millions of lines of data, you and your computer will be happy to have tools to peek inside without having to open the whole file!
+- What if we want to extract just the rows of data that correspond to Healthy (HH) individuals? We can use the search tool **grep** to search for a target query. Any line matching our search string will be printed to screen.
+
+```bash
+[srkeller@pbio381 mydata]$ grep 'HH' ssw_samples.txt 
+10	HH	INT	10_5-08_H	10_5-11_H	10_5-14_H	10_5-17_H	10_5-20_H
+24	HH	INT	24_5-08_H	24_5-11_H	24_5-14_H	24_5-17_H	24_5-20_H
+27	HH	INT	27_5-08_H	27_5-11_H	27_5-14_H	27_5-17_H	27_5-20_H
+31	HH	SUB	31_6-12_H	31_6-15_H	31_6-18_H	31_6-21_H	31_6-24_H
+32	HH	SUB	32_6-12_H	32_6-15_H	32_6-18_H	32_6-21_H	
+33	HH	SUB	33_6-12_H	33_6-15_H	33_6-18_H	33_6-21_H	33_6-24_H
+34	HH	SUB	34_6-12_H	34_6-15_H	34_6-18_H	34_6-21_H	34_6-24_H
+35	HH	SUB	35_6-12_H	35_6-15_H	35_6-18_H	35_6-21_H	
+[srkeller@pbio381 mydata]$
+```
+
+- What if instead of printing it to screen, we want to save the output of our search to a new file? This is easy, just use the ">" symbol to redirect the results of any command to an output file with your choice of name.
+
+```bash
+[srkeller@pbio381 mydata]$ grep 'HH' ssw_samples.txt >ssw_HHonly.txt
+[srkeller@pbio381 mydata]$ ll
+total 8
+-rw-r--r--. 1 srkeller users  462 Jan 31 20:46 ssw_HHonly.txt
+-rwxrwxr-x. 1 srkeller users 1255 Jan 31 17:42 ssw_samples.txt
+[srkeller@pbio381 mydata]$ 
+```
+
+- We can do the same routine for the "SS" samples. Here's a trick, when you're doing a similar task as a previous command, hit the up arrow on your keyboard at the $ prompt, and it will recall the last command you issued. Then you just have to switch the HH's for SS's.
+
+```bash
+[srkeller@pbio381 mydata]$ grep 'SS' ssw_samples.txt >ssw_SSonly.txt
+[srkeller@pbio381 mydata]$ ll
+total 12
+-rw-r--r--. 1 srkeller users  462 Jan 31 20:46 ssw_HHonly.txt
+-rwxrwxr-x. 1 srkeller users 1255 Jan 31 17:42 ssw_samples.txt
+-rw-r--r--. 1 srkeller users  342 Jan 31 20:48 ssw_SSonly.txt
+[srkeller@pbio381 mydata]$ 
+```
+
+- **Grep** is a useful search tool and has many additional features for sorting and output of the results. These kinds of search algorithms are called "regular expressions", or "regexp", and are one of the most powerful tools for wokring with large text files. If you want to learn more about **grep** and its regexp capabilities, you can look at the **"man"** page or manual. In fact, every UNIX command-line program has a built-in **man** page that you can call up to help you. Just type **man** and then the program name and it will give you the manual (small excerpt shown below).
+
+```bash
+[srkeller@pbio381 mydata]$ man grep
+
+
+GREP(1)                            General Commands Manual                           GREP(1)
+
+NAME
+       grep, egrep, fgrep - print lines matching a pattern
+
+SYNOPSIS
+       grep [OPTIONS] PATTERN [FILE...]
+       grep [OPTIONS] [-e PATTERN | -f FILE] [FILE...]
+
+DESCRIPTION
+       grep searches the named input FILEs (or standard input if no files are named, or if a
+       single hyphen-minus (-) is given as file name) for lines containing a  match  to  the
+       given PATTERN.  By default, grep prints the matching lines.
+
+       In  addition,  two variant programs egrep and fgrep are available.  egrep is the same
+       as grep -E.  fgrep is the same as grep -F.  Direct  invocation  as  either  egrep  or
+       fgrep  is  deprecated,  but is provided to allow historical applications that rely on
+       them to run unmodified.
+
+OPTIONS
+   Generic Program Information
+       --help Print a usage message briefly summarizing these command-line options  and  the
+              bug-reporting address, then exit.
+
+       -V, --version
+              Print  the version number of grep to the standard output stream.  This version
+              number should be included in all bug reports (see below).
+
+   Matcher Selection
+       -E, --extended-regexp
+              Interpret PATTERN as an extended regular expression (ERE, see below).  (-E  is
+              specified by POSIX.)
+
+       -F, --fixed-strings, --fixed-regexp
+              Interpret  PATTERN  as  a list of fixed strings, separated by newlines, any of
+              which is to be matched.  (-F is  specified  by  POSIX,  --fixed-regexp  is  an
+              obsoleted alias, please do not use it in new scripts.)
+
+       -G, --basic-regexp
+              Interpret PATTERN as a basic regular expression (BRE, see below).  This is the
+              default.
+
+       -P, --perl-regexp
+              Interpret PATTERN as a Perl regular expression.  This is  highly  experimental
+              and grep -P may warn of unimplemented features.
+```
+
+- One of the most useful aspects of UNIX is the ability to take the output from one command and use it as standard input (termed 'stdin') into another command without having to store the intermediate files. Such a workflow is called "piping", and makes use of the pipe character (|) located above the return key to feed data between programs.
+  - Example: Say we wanted to know how many samples come from the Intertidal. We can use **grep** to do the search, and pipe the results to the command **wc** which will tally up the number of lines, words, and characters in the file…voila!
+
+```bash
+[srkeller@pbio381 mydata]$ grep 'INT' ssw_samples.txt | wc
+     16     106     762
+[srkeller@pbio381 mydata]$ 
+```
+
+- Looks like 16 INT samples in the original data. See how quick it was to get a line count on this match, without actully opening a file or printing/saving the outputs? 
+- Now, what if we want to move the files we created with just individuals of a particular disease status. There's a way to do this quickly using the wildcard character "*". With the wildcard, the "*\*" takes the place of any character, and in fact any length of characters. For example, make a new directory called *samples_by_disease/* inside the *mydata/* folder. Then move all files that contain the word "only" into the new directory.
+
+```bash
+[srkeller@pbio381 mydata]$ mkdir sample_by_disease/
+[srkeller@pbio381 mydata]$ ll
+total 12
+drwxr-xr-x. 2 srkeller users   10 Jan 31 21:12 sample_by_disease
+-rw-r--r--. 1 srkeller users  462 Jan 31 20:46 ssw_HHonly.txt
+-rwxrwxr-x. 1 srkeller users 1255 Jan 31 17:42 ssw_samples.txt
+-rw-r--r--. 1 srkeller users  342 Jan 31 20:48 ssw_SSonly.txt
+[srkeller@pbio381 mydata]$ mv *only* sample_by_disease/
+[srkeller@pbio381 mydata]$ ll
+total 4
+drwxr-xr-x. 2 srkeller users   60 Jan 31 21:12 sample_by_disease
+-rwxrwxr-x. 1 srkeller users 1255 Jan 31 17:42 ssw_samples.txt
+[srkeller@pbio381 mydata]$ cd sample_by_disease/
+[srkeller@pbio381 sample_by_disease]$ ll
+total 8
+-rw-r--r--. 1 srkeller users 462 Jan 31 20:46 ssw_HHonly.txt
+-rw-r--r--. 1 srkeller users 342 Jan 31 20:48 ssw_SSonly.txt
+[srkeller@pbio381 sample_by_disease]$ 
+```
+
+
+
+### Handy UNIX cheat sheet for helping to remember some of these commonly used commands (and others)
+
+![UNIX cheat sheet](https://files.fosswire.com/2007/08/fwunixref.pdf)
