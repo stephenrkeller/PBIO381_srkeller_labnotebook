@@ -4,8 +4,6 @@
 
 ### February 1, 2017
 
-
-
 *What is the command-line?*
 
 The command-line, also known as a "terminal" or "shell", is a way of interacting with your local computer or a remote server by means of typing commands or scripts, without using a graphical user interface (GUI).
@@ -238,7 +236,7 @@ OPTIONS
 ```
 
 - Looks like 16 INT samples in the original data. See how quick it was to get a line count on this match, without actully opening a file or printing/saving the outputs? 
-- Now, what if we want to move the files we created with just individuals of a particular disease status. There's a way to do this quickly using the wildcard character "*". With the wildcard, the "*\*" takes the place of any character, and in fact any length of characters. For example, make a new directory called *samples_by_disease/* inside the *mydata/* folder. Then move all files that contain the word "only" into the new directory.
+- Now, what if we want to move the files we created with just individuals of a particular disease status. There's a way to do this quickly using the wildcard character "*". With the wildcard, the "*\*" takes the place of any character, and in fact any length of characters. For example, make a new directory called *samples_by_disease/* inside the *mydata/* folder. Then move all files that contain the word "only" into the new directory using the **mv** command.
 
 ```bash
 [srkeller@pbio381 mydata]$ mkdir sample_by_disease/
@@ -261,8 +259,115 @@ total 8
 [srkeller@pbio381 sample_by_disease]$ 
 ```
 
+- OK, what about when we have files we don't want anymore? How do we clean up our workspace? You can remove files and folders with the **rm** command. However, in its default mode, UNIX will not ask if you really mean it before getting rid of it forever(!), so this can be dangerous if you're not paying attention. 
+  - As an example, let's use our **grep** command to pull out he seastar samples that started healthy and then became sick. But perhaps we later decide we're not going to work with those samples, so we use **rm** to delete that file:
+
+```bash
+[srkeller@pbio381 mydata]$ ll
+total 8
+drwxr-xr-x. 2 srkeller users   60 Jan 31 21:12 sample_by_disease
+-rw-r--r--. 1 srkeller users  282 Feb  1 05:35 ssw_HSonly.txt
+-rwxrwxr-x. 1 srkeller users 1255 Jan 31 17:42 ssw_samples.txt
+[srkeller@pbio381 mydata]$ rm ssw_HSonly.txt 
+[srkeller@pbio381 mydata]$ ll
+total 4
+drwxr-xr-x. 2 srkeller users   60 Jan 31 21:12 sample_by_disease
+-rwxrwxr-x. 1 srkeller users 1255 Jan 31 17:42 ssw_samples.txt
+[srkeller@pbio381 mydata]$
+```
+- Gone! Forever! If that worries you, you can change your personal settings so that the server asks you to confirm deletion before it acts. To do this, we'll need to follow a couple of new steps:
 
 
-### Handy UNIX cheat sheet for helping to remember some of these commonly used commands (and others)
+1.    **cd** to your home directory (~/)
+      		2. list all the files, including "hidden" ones that aren't usually shown. To do this, use `ll -a`.
+      		3. Look for a file called ".bashrc" — this contains your settings for how you interact with the server when you log in.
+      		4. We're going to open this file and edit it to add a setting to request that **rm** confirms deletion with us. To edit text files on the fly in UNIX, you can use the built-in text editor, "vim": `vim .bashrc`
+      		5. You should see something that looks like this:
+
+```bash
+  # .bashrc
+
+  # Source global definitions
+  if [ -f /etc/bashrc ]; then
+          . /etc/bashrc
+  fi
+
+  # Uncomment the following line if you don't like systemctl's auto-paging feature:
+  # export SYSTEMD_PAGER=
+
+  # User specific aliases and functions
+
+```
+
+6.   Use your arrow key to move your cursor down to the last line, below ""# User specific aliases and functions" — this is where we're going to insert our new function.
+
+7.   By defauly, vim is in read-only mode when it opens files. To go into edit mode, press your "i" key (for "insert"). You are now able to make changes to the file.
+
+8.   Add the following text on a new line directly below the "# User specific…" line:
+
+       `alias rm='rm -i'`
+
+9.   Your file should now look like this:
+
+```bash
+  # .bashrc
+
+  # Source global definitions
+  if [ -f /etc/bashrc ]; then
+          . /etc/bashrc
+  fi
+
+  # Uncomment the following line if you don't like systemctl's auto-paging feature:
+  # export SYSTEMD_PAGER=
+
+  # User specific aliases and functions
+
+  alias rm='rm -i'
+```
+
+10.    You're now ready to get out of edit mode (hit the `escape key`), save your changes (type `:w`), and exit vim (type `:q`).
+
+11.    These changes won't take effect until you log out (type `exit` to log out of the server). But from now on, every time you log in, the server will remember that you want a reminder before deleting any of your work.
+
+      ​
+
+##Let's review what we've learned so far…##
+
+- Logging in to the server: `ssh netid@pbio381.uvm.edu`
+- Finding what directory you're in: `pwd`
+- Listing files in your current directory, or changing to a new directory: `ll`, `cd`
+- Making a new folder: `mkdir foldername`
+- Location of shared space, data, and programs on our class server:
+
+```
+[srkeller@pbio381 ~]$ cd /data/
+[srkeller@pbio381 data]$ ll
+total 8
+drwxr-xr-x.  5 root root       73 Jan 31 17:35 archive
+drwxrwxr-x.  2 root pb381adm   40 Nov 30  2015 packages
+drwxrwxr-x. 33 root pb381adm 4096 Nov 30  2015 popgen
+drwxrwxr-x.  3 root pb381adm   42 Jan 30 09:08 project_data
+drwxrwxr-x.  2 root pb381adm    6 Oct  2  2015 scripts
+drwxr-xr-x. 18 root root     4096 Sep  2  2015 users
+[srkeller@pbio381 data]$ 
+```
+
+- Copying or moving files from one location to another: `cp filename destinationpath/` or `mv filename destinationpath/` 
+- Peeking into the first or last few lines of a file: `head filename`, `tail filename`
+- Searching within a file for a match: `grep 'search string' filename`
+- Outputing the results of a command to a new file: `grep 'search string' filename >outputfilename`
+- Using wildcards to work on multiple files at the same time: `mv *.txt ~/newfolder`
+-  Using the "pipe" to send the output of one command to the input of another: `grep 'INT' filename | wc `
+- Removing files or folders: `rm`
+- Editing text files on the server: `vim filename`       
+
+******************
+
+### Handy [UNIX cheat sheet](https://files.fosswire.com/2007/08/fwunixref.pdf) for helping to remember some of these commonly used commands (and others)
 
 ![UNIX cheat sheet](https://files.fosswire.com/2007/08/fwunixref.pdf)
+
+### Here's another useful [UNIX cheatsheet](http://cheatsheetworld.com/programming/unix-linux-cheat-sheet/)
+
+
+
