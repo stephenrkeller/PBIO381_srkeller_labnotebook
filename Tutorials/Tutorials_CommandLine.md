@@ -365,8 +365,6 @@ drwxr-xr-x. 18 root root     4096 Sep  2  2015 users
 
 ### Handy [UNIX cheat sheet](https://files.fosswire.com/2007/08/fwunixref.pdf) for helping to remember some of these commonly used commands (and others)
 
-![UNIX cheat sheet](https://files.fosswire.com/2007/08/fwunixref.pdf)
-
 ### Here's another useful [UNIX cheatsheet](http://cheatsheetworld.com/programming/unix-linux-cheat-sheet/)
 
 
