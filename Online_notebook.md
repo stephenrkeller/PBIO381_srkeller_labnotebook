@@ -8,11 +8,11 @@
 
 ## Description   
 This notebook will be a repository of all my online work throughout the semester. I will use it to log my notes, scripts, results, command-line output, and documents/assignments. Having it on github will allow both version control on this work, as well as foster reproducibility of the science in future semesters. 
-      
+​      
 
 ### Table of contents        
 * [Page 1: 2017-01-17](#id-section1). Initial entry
-* [Page 2:](#id-section2).
+* [Page 2: 2017-02-06](#id-section2). Intro to RNAseq
 * [Page 3:](#id-section3).
 * [Page 4:](#id-section4).
 * [Page 5:](#id-section5).
@@ -115,10 +115,18 @@ stephen@Wright:.../Centaurea_GBS/fastq$
 
 ```
 
-
 ------
 <div id='id-section2'/>
-### Page 2: 
+### Page 2: 2017-02-06. Intro to RNAseq
+
+Practicing logging into server, looking at fastq files and understanding their format, assessing quality with fastqc, trimming, and re-evaluating qc.
+
+Link to github [tutorial for today's RNASeq session.](https://adnguyen.github.io/2017_Ecological_Genomics/Tutorial/2017-02-06_RNAseq_tutorial.html) 
+
+- Each student was assigned a single pair (R1 and R2) of fastq.gz files to work with. Melissa will do the remaining files not assigned to students.
+- Students worked through editing their trimmomatic files (trim_example.sh) to specify the correct input and output paths, and running trimmomatic to clean up their reads. We stopped prior to running fastqc and setting up the Trinity runs. Will pick up there on Wednesday.
+- ​
+
 ------
 <div id='id-section3'/>
 ### Page 3:
