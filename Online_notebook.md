@@ -4,7 +4,7 @@
 ### PBIO/BIO381: Ecological Genomics, 2017
 
 ## Date started: (2017-01-18)   
-## Date end:   (year-month-day)    
+## Date end:    
 
 ## Description   
 This notebook will be a repository of all my online work throughout the semester. I will use it to log my notes, scripts, results, command-line output, and documents/assignments. Having it on github will allow both version control on this work, as well as foster reproducibility of the science in future semesters. 
@@ -13,7 +13,7 @@ This notebook will be a repository of all my online work throughout the semester
 ### Table of contents        
 * [Page 1: 2017-01-17](#id-section1). Initial entry
 * [Page 2: 2017-02-06](#id-section2). Intro to RNAseq
-* [Page 3: 2017-02-08](RNASeq trimming, fastqc, and assembly).
+* [Page 3: 2017-02-08](#id-section3). RNASeq trimming, fastqc, and assembly
 * [Page 4:](#id-section4).
 * [Page 5:](#id-section5).
 * [Page 6:](#id-section6).
@@ -133,11 +133,9 @@ Link to github [tutorial for today's RNASeq session.](https://adnguyen.github.io
 
 We finished working through the fastq trimming and assessed quality using fastqc. Students scp'd their fastqc output to their local machines and we looked at the html file output together and interpreted.
 
-
-
 This took us to the end of class essentially. We then discussed how to set up an assembly experiment using Trinity.
 
-- Chose to do an assembly on sick vs. healthy
+- Chose for Melissa and her postdoc (Melanie Lloyd) to do the assemblies outside of class time, and we would work with what they produced, going over in class the output stats from several different approaches and comparing & contrasting to determine which is best for our usage.
 
 ------
 <div id='id-section4'/>
