@@ -13,7 +13,7 @@ This notebook will be a repository of all my online work throughout the semester
 ### Table of contents        
 * [Page 1: 2017-01-17](#id-section1). Initial entry
 * [Page 2: 2017-02-06](#id-section2). Intro to RNAseq
-* [Page 3:](#id-section3).
+* [Page 3: 2017-02-08](RNASeq trimming, fastqc, and assembly).
 * [Page 4:](#id-section4).
 * [Page 5:](#id-section5).
 * [Page 6:](#id-section6).
@@ -129,7 +129,16 @@ Link to github [tutorial for today's RNASeq session.](https://adnguyen.github.io
 
 ------
 <div id='id-section3'/>
-### Page 3:
+### Page 3: 2017-02-08. RNASeq trimming, fastqc, and assembly
+
+We finished working through the fastq trimming and assessed quality using fastqc. Students scp'd their fastqc output to their local machines and we looked at the html file output together and interpreted.
+
+
+
+This took us to the end of class essentially. We then discussed how to set up an assembly experiment using Trinity.
+
+- Chose to do an assembly on sick vs. healthy
+
 ------
 <div id='id-section4'/>
 ### Page 4:
