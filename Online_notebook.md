@@ -14,7 +14,7 @@ This notebook will be a repository of all my online work throughout the semester
 * [Page 1: 2017-01-17](#id-section1). Initial entry
 * [Page 2: 2017-02-06](#id-section2). Intro to RNAseq
 * [Page 3: 2017-02-08](#id-section3). RNASeq trimming, fastqc, and assembly
-* [Page 4:](#id-section4).
+* [Page 4: 2017-02-13](#id-section4). RNA mapping
 * [Page 5:](#id-section5).
 * [Page 6:](#id-section6).
 * [Page 7:](#id-section7).
@@ -139,7 +139,36 @@ This took us to the end of class essentially. We then discussed how to set up an
 
 ------
 <div id='id-section4'/>
-### Page 4:
+### Page 4: 2017-02-13. RNA Mapping
+
+[New tutorial posted on Github: RNA Mapping](https://adnguyen.github.io/2017_Ecological_Genomics/Tutorial/2017-02-13_RNAseq_Mapping.html)
+
+- We pick back up with a discussion of cleaned reads going into mapping assembly using Trinity. Melissa re-did the cleaning using different parameters: Q>20, base trim of 12 bp (=2 sets of random hexamers)
+- Melissa has run assemblies and we will evaluate their quality based on output statistics.
+- Melissa used individual seastar 15, which had all 5 days sampled, and went from healthy to sick within the period. Total number of reads across all samples was ~ 50M, which is high enough to give a good assembly.
+- Output assembly from Trinity: 
+  - /data/project_data/assembly/Trinity.fasta
+- Steps to evaluate:
+
+1. Predict ORFs using TransDecoder
+
+   1. /data/project_data/assembly
+
+2. Take output from TransDecoder to translate into aa's and BLASTp against uniprot_swissprot database
+
+3. Now have final reference transcriptome that we will be working with from here on:
+
+   /data/project_data/assembly/longest_orfs.cds
+
+- We'll be using this reference assembly to start read mapping to reference genome with bwa:
+  - bwaaln.sh script
+  - Melissa did a nice explanation of her bash code here, basically the students just need to replace the first part of their R1 sample name, and the bash script generates the R2 sample name, and a shortened version of each sample name, and then pushes it to bwa. This script would also be useful to use in a for loop if mapping over many different .fq files.
+  - Using default values in bwa for mapping (max diff = 0.04)
+
+
+
+
+
 ------
 <div id='id-section5'/>
 ### Page 5:

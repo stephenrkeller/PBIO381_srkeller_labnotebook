@@ -1,0 +1,20 @@
+---
+title: "DESeq2_PBIO381_2017"
+author: "SRK"
+date: "2/22/2017"
+output: html_document
+---
+
+```{r}
+## try http:// if https:// URLs are not supported
+# source("https://bioconductor.org/biocLite.R")
+# biocLite("DESeq2")
+```
+
+You can also embed plots, for example:
+
+```{r}
+library("DESeq2")
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
