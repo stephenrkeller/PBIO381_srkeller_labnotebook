@@ -15,7 +15,7 @@ This notebook will be a repository of all my online work throughout the semester
 * [Page 2: 2017-02-06](#id-section2). Intro to RNAseq
 * [Page 3: 2017-02-08](#id-section3). RNASeq trimming, fastqc, and assembly
 * [Page 4: 2017-02-13](#id-section4). RNA mapping
-* [Page 5:](#id-section5).
+* [Page 5: 2017-02-22](#id-section5). RNASeq differential expression in DESeq2
 * [Page 6:](#id-section6).
 * [Page 7:](#id-section7).
 * [Page 8:](#id-section8).
@@ -168,10 +168,32 @@ This took us to the end of class essentially. We then discussed how to set up an
 
 
 
-
 ------
 <div id='id-section5'/>
-### Page 5:
+### Page 5:RNASeq differential expression in DESeq2
+
+Running R markdown script for DESeq2 analysis
+
+
+
+Have students scp the counts data onto their local hard drive:
+
+```
+scp /data/project_data/DGE/*
+```
+
+Note: Melissa made a new transcriptome assembly based on using 4 individuals
+
+Link to the tutorial: [here!](https://adnguyen.github.io/2017_Ecological_Genomics/Tutorial/2017-2-22_RNAseqDGE.html)
+
+Path to my R script on my local machine: 
+
+```
+~/github/PBIO381_srkeller_labnotebook/data/DGE_data/DESeq2_exploreSSW_trim.R
+```
+
+
+
 ------
 <div id='id-section6'/>
 ### Page 6:

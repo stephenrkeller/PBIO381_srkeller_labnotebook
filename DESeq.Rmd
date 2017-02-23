@@ -5,16 +5,18 @@ date: "2/22/2017"
 output: html_document
 ---
 
+Download from CRAN and install with dependencies:
+
 ```{r}
 ## try http:// if https:// URLs are not supported
 # source("https://bioconductor.org/biocLite.R")
 # biocLite("DESeq2")
 ```
 
-You can also embed plots, for example:
+Load the DESeq2 library:
 
 ```{r}
 library("DESeq2")
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
