@@ -16,7 +16,7 @@ This notebook will be a repository of all my online work throughout the semester
 * [Page 3: 2017-02-08](#id-section3). RNASeq trimming, fastqc, and assembly
 * [Page 4: 2017-02-13](#id-section4). RNA mapping
 * [Page 5: 2017-02-22](#id-section5). RNASeq differential expression in DESeq2
-* [Page 6:](#id-section6).
+* [Page 6: 2017-02-27](#id-section6) RNASeq cont…learning to build custom DE models in DESeq2
 * [Page 7:](#id-section7).
 * [Page 8:](#id-section8).
 * [Page 9:](#id-section9).
@@ -196,7 +196,29 @@ Path to my R script on my local machine:
 
 ------
 <div id='id-section6'/>
-### Page 6:
+### Page 6: RNASeq cont…learning to build custom DE models in DESeq2
+
+Melissa has re-run the assmebly and transcript counts and we are now going to work on new DE models in DESeq2
+
+Path to R script and input data files:
+
+`/Users/srkeller/github/PBIO381_srkeller_labnotebook/data/DGE_data/round2`
+
+Key part of setting up a new DESeq design:
+
+counts ~= covariate + testvariable —> first predictor is always the "control" covariate variable, the next ones are the ones of biological interest.
+
+* complete dataset is now 13053 genes; of which 12954 have >100 counts (summed across all 77 samples)
+* have a line in the R script to randomly sample the total gene set down to just 1200 in order to "practice" running different models
+* Build different models:
+  * interactions among multiple factors
+  * build custom contrasts after analysis of all groups in a group-level design
+  * time-series model
+
+
+
+
+
 ------
 <div id='id-section7'/>
 ### Page 7:
