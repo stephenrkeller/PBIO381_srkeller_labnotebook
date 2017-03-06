@@ -16,11 +16,11 @@ When doing population genomics on large genome-wide or transcriptome-wide datase
 
 
 
-As usual, the community has converged on a common standard to represent these large and sometimes complex SNP data files. It is known as the Variant Call Format, or VCF. Here's a link to the description of what each field in a VCF file means:  [VCF version 4.3 file definition]([hts-specs](https://github.com/samtools/hts-specs)/**VCFv4.3.pdf**)
+As usual, the community has converged on a common standard to represent these large and sometimes complex SNP data files. It is known as the Variant Call Format, or VCF. Here's a link to the description of what each field in a VCF file means:  [VCF version 4.3 file definition](https://github.com/samtools/hts-specs/blob/master/VCFv4.3.pdf)
 
 
 
-I called SNPs using the method imlemented in Gayral et al. (2014) called '**reads2snp**'. To get us started for today, I used just a single sample library from each individual (the first dated one). Here's the list:
+I called SNPs using the method implemented in Gayral et al. (2014) called '**reads2snp**'. To get us started for today, I used just a single sample library from each individual (the first dated one). Here's the list:
 
 ```
 03_5-08_S_2
@@ -61,7 +61,7 @@ The manual page for VCFtools is an excellent resource! [The latest version is he
 
 ## Basic Syntax and Usage ##
 
-Now: **cd** to the directory `/data/project_data/snps/reads2snps/` and do an **ll** …. you should see the following:
+Now: **cd** to the directory `/data/project_data/snps/reads2snps/` and do an **ll** using the wildcard *vcf…. you should see the following vcf files in the directory:
 
 ```
 [srkeller@pbio381 reads2snps]$ ll *vcf
@@ -120,7 +120,7 @@ $ vcftools --vcf filename.vcf --min-alleles 2 --max-alleles 2
   * Rationale: Sequencing errors are relatively common, but they tend to happen randomly and affect only 1 read at a time. Thus, if we have a SNP that is only seen very rarely, it may be a sequencing error, and should be discarded. For us, the most liberal MAF filters would be 1 allele copy out of the total 2N copies, or 1/48 = 0.02
 
 ```bash
-$ vcftools --vcf filename.vcf --maf 0.2
+$ vcftools --vcf filename.vcf --maf 0.02
 ```
 
 
@@ -138,11 +138,11 @@ $ vcftools --vcf filename.vcf --max-missing 0.8
 
 Now, it's time to combine filters instead of applying them one at a time. **NOTE:** VCFtools processes the filter requests in the order that you give it at the command-line. This is a key point, and means that if you apply the same filters in different orders, you will likely get different results!
 
-* I recommend the following order:   biallelic filter>depth>GQ>missingness
+* I recommend the following order:   biallelic filter>MAF>missingness
 * To output the resulting filtered data as a new vcf file, add the "—recode —out outfilename" to the end of the command. 
 
 ```bash
-$ vcftools --vcf filename.vcf --min-alleles 2 --max-alleles 2 --maf 0.2 --max-missing 0.8 --recode --out ~/biallelic.MAF0.2.Miss0.8
+$ vcftools --vcf filename.vcf --min-alleles 2 --max-alleles 2 --maf 0.02 --max-missing 0.8 --recode --out ~/biallelic.MAF0.02.Miss0.8
 ```
 
 ​	*Note that I re-directed the output file to my home directory. You should do the same!*
