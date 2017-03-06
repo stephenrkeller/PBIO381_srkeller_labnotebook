@@ -20,57 +20,107 @@ As usual, the community has converged on a common standard to represent these la
 
 
 
+I called SNPs using the method imlemented in Gayral et al. (2014) called '**reads2snp**'. To get us started for today, I used just a single sample library from each individual (the first dated one). Here's the list:
+
+```
+03_5-08_S_2
+07_5-08_S_1
+08_5-08_H_0
+09_5-08_H_0
+10_5-08_H_0
+14_5-08_S_2
+15_5-08_H_0
+19_5-11_H_0
+20_5-08_H_0
+22_5-08_S_1
+23_5-17_S_2
+24_5-08_H_0
+26_5-08_S_2
+27_5-08_H_0
+28_5-08_S_1
+29_5-08_S_2
+31_6-12_H_0
+32_6-12_H_0
+33_6-12_H_0
+34_6-12_H_0
+35_6-12_H_0
+36_6-12_S_1
+37_6-12_H_0
+38_6-12_H_0
+```
+
+Eventually, we'll work with *all* the reads from a given individual by combining across libraries for the same genotype prior to SNP calling. More on that later...
+
+------
+
+## Variant Call Format (VCF) for SNP data ## 
+
 We'll be working with vcf files a lot as we conduct the population genomics section of the course. The first step in learning how to work with these files is to use a program called **VCFTools** for parsing your data file into just those samples and sites of interest, and to calculate diversity stats on these.
-
-
 
 The manual page for VCFtools is an excellent resource! [The latest version is here.](https://vcftools.github.io/man_latest.html) 
 
-
-
 ## Basic Syntax and Usage ##
 
-We're going to use VCFtools to examine the effects of different filtering strategies on the number of SNPs we get and their quality. The first step is seeing if VCFtools likes our file format, and getting some basic info on the # of SNPs and samples:
+Now: **cd** to the directory `/data/project_data/snps/reads2snps/` and do an **ll** …. you should see the following:
+
+```
+[srkeller@pbio381 reads2snps]$ ll *vcf
+-rw-r--r--. 1 srkeller users      17426 Mar  6 06:18 head_SSW_bamlist.txt.vcf
+-rw-r--r--. 1 srkeller users 1364923952 Mar  6 02:37 SSW_bamlist.txt.vcf
+[srkeller@pbio381 reads2snps]$ 
+```
+
+The file you want is **SSW_bamlist.txt.vcf**.  The other file is just the header so you can look at the formatting of the file in **VIM** without having to open the big file.
+
+
+
+We're going to use VCFtools to examine the effects of different filtering strategies on the number of SNPs we get and their quality. The first step is seeing if VCFtools likes our file format, and getting some basic info on the # of SNPs and samples.
 
 ```bash
 $ vcftools --vcf filename.vcf
 ```
 
-This will return some basic info that should match of general expectations of sample size. It's always good to have a reality check on your file format.
+This will return some basic info that should match of general expectations of sample size. 
+
+​	*Did it detect the correct number of individuals?* 
+
+​	*How many SNPs do we have?*
 
 
 
-Let's try filtering out positions that are likely to be errors in the sequencing or genotyping process. For now, let's just identify how many SNPs would pass each filter without actually changing the datafile at all. Then, we can decide what combination of filters we may want to implement.
+During SNP calling, **reads2snp** applied the following fairly stringent criteria when calling SNPs:
+
+* Minimum depth to call a genotype = 10 reads
+* Minimum genotype posterior probability = 0.95
 
 
+
+Any SNPs that didn't meet that criteria were flagged as **unres** (=unresolved) and set to missing data in the vcf file. Similarly, loci that show evidence of paralogy were flagged as **para**.
+
+​	*How could we quickly find out how many SNPs were flagged as unresolved?*
+
+​	*What about the number affected by paralogy?*
+
+
+
+Now, let's try filtering out positions that are likely to be errors in the sequencing or genotyping process. For now, let's just identify how many SNPs would pass each filter without actually changing the datafile at all. Then, we can decide what combination of filters we may want to implement.
 
 ### Record for each of the following steps the number of SNPs (aka sites) that would be make it through each filter:###
 
-
-
-* *Biallelic vs. multi-allelic SNPs:*  Get rid of sites with >2 alleles. 
-  * Rationale: When looking at diversity within species, it's very rare to have mutations occur at the same position. So, SNPs with >2 alleles probably reflect sequence or mapping errors.
+* *Biallelic vs. multi-allelic SNPs:*  Keep only sites with 2 alleles. 
+  * Rationale: When looking at diversity within species, it's very rare to have mutations occur at the same position. So, SNPs with >2 alleles probably reflect sequence or mapping errors. We also want to get rid of SNPs showing <2 alleles.
 
 ```bash
-$ vcftools --vcf filename.vcf --max-alleles 2
+$ vcftools --vcf filename.vcf --min-alleles 2 --max-alleles 2
 ```
 
 
 
-* *Read depth per SNP:* If an individual has <10 reads mapped at a given SNP,  convert to missing data
-  * Rationale: To have confidence that the SNP alleles for an individual have been sampled, you need read depth (the more the better). This is the coin flipping analogy…how many times do you need to flix the coin to be confident that it is fair, with an equal chance of heads & tails.
+* *Minor allele frequency (MAF):* Gets rid of very rare SNPs (based on a user-defined threshold).
+  * Rationale: Sequencing errors are relatively common, but they tend to happen randomly and affect only 1 read at a time. Thus, if we have a SNP that is only seen very rarely, it may be a sequencing error, and should be discarded. For us, the most liberal MAF filters would be 1 allele copy out of the total 2N copies, or 1/48 = 0.02
 
 ```bash
-$ vcftools --vcf filename.vcf --minDP 8
-```
-
-
-
-* *Genotype Quality:* Exclude all genotype calls below a quality threshold of Q20 (corresponds to 1 in 100 probability of being incorrect)
-  * Rationale: How confident are you that your homozygous call isn't really a heterozygote and you just missed seing the 2nd allele? The GQ scores gives you a PHRED-scaled measure of confidence in the genotype call being correct, based on the multinomial probability of getting the 3 genotypic class, given the number of reads covering each allele.
-
-```bash
-$ vcftools --vcf filename.vcf --minGQ 20
+$ vcftools --vcf filename.vcf --maf 0.2
 ```
 
 
@@ -92,22 +142,20 @@ Now, it's time to combine filters instead of applying them one at a time. **NOTE
 * To output the resulting filtered data as a new vcf file, add the "—recode —out outfilename" to the end of the command. 
 
 ```bash
-$ vcftools --vcf filename.vcf --max-alleles 2 --minDP 10 --minGQ 20 --max-missing 0.8 --recode --out outputfilename
+$ vcftools --vcf filename.vcf --min-alleles 2 --max-alleles 2 --maf 0.2 --max-missing 0.8 --recode --out ~/biallelic.MAF0.2.Miss0.8
 ```
 
+​	*Note that I re-directed the output file to my home directory. You should do the same!*
+
+## Getting summary stats for downstream analysis and plotting in R
+
+VCFtools also can provide output in the form of many useful summary stats on a vcf file. Let's look at the observed and expected heterozygosity for each SNPs and test if any violate Hardy-Weinberg equilibrium expectations: **(1=p^2 + 2pq + q^2)**. Use the quality-filtered file we generated above as input.
+
+```
+$ vcftools --vcf filtered_filename.vcf --hardy
+```
+
+You can then bring this into R to take a look at which sites show deviation from HWE...
 
 
-
-
-
-
-
-
-​
-
-##Let's review what we've learned so far…##
-
- 
-
-******************
 
