@@ -1,0 +1,78 @@
+March 05, 2017
+
+Trying reads2snp pipeline for calling variants in SSW RNASeq dataset
+
+General approach:
+
+
+1. Convert SSW *sam files to *bam files:
+
+* ```samtools view -@ 4 -uhSt exple.fasta exple.sam | samtools sort -@ 4 - exple```
+
+* This will produce a sorted bam file “exple.bam” using 4 threads
+
+--OR--
+
+#!/bin/bash
+
+cd /data/project_data/sam
+
+# Fix mate pairs in bam files
+
+for file in *.sam.bam
+
+do
+
+samtools view -@ 16 -bS "$file" >"$file.bam"
+samtools fixmate "$file" >"$file.fixmate.bam"
+
+done
+
+##########
+
+# Sort fixed bam files
+
+for file in *.fixmate.bam
+
+do
+
+sambamba_v0.6.0 sort -m 6G -t 8 -p --tmpdir=/data/project_data/sam/tmp2/ "$file" "$file.fixmate.sorted.sambada"
+
+done
+
+##########
+# Remove PCR dups
+
+for file in *.fixmate.sorted.sambada
+
+do 
+
+sambamba_v0.6.0 markdup "$file" "$file.fixmate.sorted.mrkdup.bam"
+
+done
+
+# This is now ready to pass to reads2snps for mapping
+
+
+2. Create a list of the bam files for input to reads2snp:
+
+The bam list file must be a two-colon file including one line per analyzed individual, such as:
+
+file1.bam   indiv1_name
+file2.bam   indiv2_name
+
+To make this list from the sam/ directory where the bam files are located:
+
+ll *.bam >~/bamlist.txt
+grep -o -P '\d\d\_.*bam' bamlist.txt >bamfiles.txt
+grep -o -P '\d\d\_\d\-\d\d\_\w\_\d' bamfiles.txt >bamnames.txt
+paste baminds.txt baminds2.txt > SSW_bamlist.txt
+
+3. Call SNPs from bam files and reference assembly:
+
+reads2snp -bam_list_file my_list.txt -bam_ref_file my_ref.fasta
+
+We'll use our SSW de-novo assmebly from Trinity as the reference:
+
+The assembly used for the mapping was /data/project_data/assembly/08-11-35-36_cl20_longest_orfs_gene.cds
+cd

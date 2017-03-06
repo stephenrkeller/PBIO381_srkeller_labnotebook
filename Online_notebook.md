@@ -17,7 +17,7 @@ This notebook will be a repository of all my online work throughout the semester
 * [Page 4: 2017-02-13](#id-section4). RNA mapping
 * [Page 5: 2017-02-22](#id-section5). RNASeq differential expression in DESeq2
 * [Page 6: 2017-02-27](#id-section6) RNASeq cont…learning to build custom DE models in DESeq2
-* [Page 7:](#id-section7).
+* [Page 7 2017-03-05:](#id-section7) Background work for calling SNPs in the mapped RNASeq reads. 
 * [Page 8:](#id-section8).
 * [Page 9:](#id-section9).
 * [Page 10:](#id-section10).
@@ -218,10 +218,21 @@ counts ~= covariate + testvariable —> first predictor is always the "control" 
 
 
 
-
 ------
 <div id='id-section7'/>
-### Page 7:
+### Page 7: Background work for calling SNPs in the mapped RNASeq reads
+
+
+
+Worked on this awhile today. Identified the following issues:
+
+* Our samples are from the same genetic individuals but sampled from many different time points. The Read Group headers in the sam and bam alignment files (@RG) indicate that each library is being tracked as an independent sample. Thus, SNP calling will treat each library separately, which is not what we want.
+* Options:
+  * Regexp to change the @RG lines to include non-reduundant SM:"SampleID" info for each individual, then merge bam files into a single merged .bam prior to snp calling
+  * choose a single "representative" bam file for calling snps
+* Going to try the second approach for now to get things running, and then come back and do the first approach to generate a better SNP file for downstream analysis...
+* ​
+
 ------
 <div id='id-section8'/>
 ### Page 8:

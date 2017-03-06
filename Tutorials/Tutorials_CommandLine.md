@@ -1,6 +1,6 @@
 # P/BIO381 Tutorials
 
-## Intro to connecting to unix servers and navigating the command-line
+## Intro to connecting to Unix servers and navigating the command-line
 
 ### February 1, 2017
 
@@ -279,10 +279,10 @@ drwxr-xr-x. 2 srkeller users   60 Jan 31 21:12 sample_by_disease
 
 
 1.    **cd** to your home directory (~/)
-      		2. list all the files, including "hidden" ones that aren't usually shown. To do this, use `ll -a`.
-      		3. Look for a file called ".bashrc" — this contains your settings for how you interact with the server when you log in.
-      		4. We're going to open this file and edit it to add a setting to request that **rm** confirms deletion with us. To edit text files on the fly in UNIX, you can use the built-in text editor, "vim": `vim .bashrc`
-      		5. You should see something that looks like this:
+      2. list all the files, including "hidden" ones that aren't usually shown. To do this, use `ll -a`.
+         3. Look for a file called ".bashrc" — this contains your settings for how you interact with the server when you log in.
+         4. We're going to open this file and edit it to add a setting to request that **rm** confirms deletion with us. To edit text files on the fly in UNIX, you can use the built-in text editor, "vim": `vim .bashrc`
+         5. You should see something that looks like this:
 
 ```bash
   # .bashrc
@@ -301,13 +301,13 @@ drwxr-xr-x. 2 srkeller users   60 Jan 31 21:12 sample_by_disease
 
 6.   Use your arrow key to move your cursor down to the last line, below ""# User specific aliases and functions" — this is where we're going to insert our new function.
 
-7.   By defauly, vim is in read-only mode when it opens files. To go into edit mode, press your "i" key (for "insert"). You are now able to make changes to the file.
+7. By defauly, vim is in read-only mode when it opens files. To go into edit mode, press your "i" key (for "insert"). You are now able to make changes to the file.
 
-8.   Add the following text on a new line directly below the "# User specific…" line:
+8. Add the following text on a new line directly below the "# User specific…" line:
 
        `alias rm='rm -i'`
 
-9.   Your file should now look like this:
+9. Your file should now look like this:
 
 ```bash
   # .bashrc
@@ -327,7 +327,7 @@ drwxr-xr-x. 2 srkeller users   60 Jan 31 21:12 sample_by_disease
 
 10.    You're now ready to get out of edit mode (hit the `escape key`), save your changes (type `:w`), and exit vim (type `:q`).
 
-11.    These changes won't take effect until you log out (type `exit` to log out of the server). But from now on, every time you log in, the server will remember that you want a reminder before deleting any of your work.
+11. These changes won't take effect until you log out (type `exit` to log out of the server). But from now on, every time you log in, the server will remember that you want a reminder before deleting any of your work.
 
       ​
 
@@ -357,7 +357,7 @@ drwxr-xr-x. 18 root root     4096 Sep  2  2015 users
 - Searching within a file for a match: `grep 'search string' filename`
 - Outputing the results of a command to a new file: `grep 'search string' filename >outputfilename`
 - Using wildcards to work on multiple files at the same time: `mv *.txt ~/newfolder`
--  Using the "pipe" to send the output of one command to the input of another: `grep 'INT' filename | wc `
+- Using the "pipe" to send the output of one command to the input of another: `grep 'INT' filename | wc `
 - Removing files or folders: `rm`
 - Editing text files on the server: `vim filename`       
 
