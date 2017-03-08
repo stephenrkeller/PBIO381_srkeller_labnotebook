@@ -4,17 +4,19 @@
 
 ### March 08, 2017
 
-In the last session, we got familiar with working with SNP data in VCF files, and doing some basic filtering. Now that we have a filtered SNP dataset that has high-quality sites in it, let's look at some different measures of genetic diversity in our sea star population. 
-
-Keep in mind that the diversity of a population primarily reflects its **effective population size (Ne)**.  Ne is shaped by many different aspects of a species' life history and ecology (sex ratio, generation time, mating system, offspring number, and many more!) as well as the population's history (bottlenecks, population growth). As a result, looking at the diversity within populations (and comparing to other populations or species) is a critical step in understanding how ecology shapes genomes. 
-
-## Getting summary stats for downstream analysis and plotting in R
-
 Where last we left off…...
 
 We were filtering SNPs and looking at how SNPs may show signs of deviation from Hardy-Weinberg equilibrium, either as a heterozygote excess OR a deficit. Let's check this again, but now we're working with ALL the sequence libraries merged per individual. Yeah! Also, we're now going to use a compressed (gzipped) file to save some space. 
 
-Let's first re-apply our filters, and zip up the resulting filtered output file. Then we can take a look at Hardy-Weinberg Equilibrium (HWE):
+Let's first re-apply our filters, and zip up the resulting filtered output file. Then we can take a look at Hardy-Weinberg Equilibrium (HWE).
+
+**PATH TO THE DATA:** 
+
+```
+/data/_project_data/snps/reads2snps/SSW_byind.txt.vcf.gz
+```
+
+*VCFtools filtering strategy (same as last session):*
 
 ```bash
 $ vcftools --gzvcf SSW_byind.txt.vcf.gz --min-alleles 2 --max-alleles 2 --maf 0.02 --max-missing 0.8 --recode --out ~/SSW_all_biallelic.MAF0.02.Miss0.8  
@@ -26,6 +28,11 @@ You can then bring the HWE output file (called "out.hwe") into **R** to take a l
 
 ------------------------------
 
+## Getting summary stats for downstream analysis and plotting in R##
+
+In the last session, we got familiar with working with SNP data in VCF files, and doing some basic filtering. Now that we have a filtered SNP dataset that has high-quality sites in it, let's look at some different measures of genetic diversity in our sea star population. 
+
+Keep in mind that the diversity of a population primarily reflects its **effective population size (Ne)**.  Ne is shaped by many different aspects of a species' life history and ecology (sex ratio, generation time, mating system, offspring number, and many more!) as well as the population's history (bottlenecks, population growth). As a result, looking at the diversity within populations (and comparing to other populations or species) is a critical step in understanding how ecology shapes genomes. 
 
 Now: Let's take a more in-depth look at the diversity hidden within these sea star data. There are many different ways to look at the diversity within populations using SNPs. Here are some that we'll think about for today:
 
@@ -51,7 +58,13 @@ Many times we'll want to subset the total SNP dataset to analyze diversity in di
 
 As an example, **let's compare the SNP frequencies for all loci between Healthy and Sick animals**. Perhaps there are some loci that contribute to a difference in pathogen susceptibility, which could be identified this way. Let's take a look.
 
-First, you need to create text files containing the individual ID's for just Sick individuals. The following file has all the sample ID's in it that are part of your VCF file: `/data/project_data/snps/reads2snps/bamnames.txt`  Use this file to get *just the **healthy** individual sample IDs*. 
+First, you need to create text files containing the individual ID's for just Sick individuals. The following file has all the sample ID's in it that are part of your VCF file (SNPs=Y,N), along with Health Trajectory (HH,HS,SS,MM), and Location (INT,SUB): 
+
+```
+/data/project_data/snps/reads2snps/ssw_healthloc.txt
+```
+
+Use this file to get *just the **healthy** individual sample IDs*. 
 
 How can we create these files in a clever, unix-y way?   HINT: grep!   ;)
 
@@ -64,17 +77,24 @@ Create another for *just the **sick** individuals*:
 * **"S_OneSampPerInd.txt"**
 
 
+We'll also want to remove all but the first column of data — the sample IDs. Here's a trick:
+
+```
+$ cut -f1 H_OneSampPerInd.txt >H_SampleIDs.txt
+```
+
+Do the same for Sick individuals.
 
 Now that we have our individuals separated by disease status, we can call VCFtools to calculate allele frequencies separately for each population. This will require 2 separate calls to VCFtools.
 
 **Allele Frequencies between Healthy and Sick individuals:**
 
 ```bash
-$ vcftools --vcf filename.vcf --freq2 --keep H_OneSampPerInd.txt --out H_OneSampPerInd
+$ vcftools --vcf filename.vcf --freq2 --keep H_SampleIDs.txt --out H_AlleleFreqs
 ```
 
 ```bash
-$ vcftools --vcf filename.vcf --freq2 --keep H_OneSampPerInd.txt --out H_OneSampPerInd
+$ vcftools --vcf filename.vcf --freq2 --keep S_SampleIDs.txt --out S_AlleleFreqs
 ```
 
 Before we bring this into R for plotting, let's gather one more comparison between our groups. 
@@ -86,7 +106,7 @@ Recall that Wright's Fst measures allele frequency variance between groups, but 
 **Fst between Healthy and Sick individuals:**
 
 ```bash
-$ vcftools --vcf ~/filename.vcf --weir-fst-pop ~/H_OneSampPerInd.txt --weir-fst-pop ~/S_OneSampPerInd.txt --out HvS_OneSampPerInd
+$ vcftools --vcf ~/filename.vcf --weir-fst-pop ~/H_SampleIDs.txt --weir-fst-pop ~/S_SampleIDs.txt --out HvS_OneSampPerInd
 ```
 
 Now, we can import these datasets into R and make some plots to examine how the diversity varies in our dataset. We can get the data into R in one of 2 ways:
@@ -100,19 +120,6 @@ Now, we can import these datasets into R and make some plots to examine how the 
 R version 3.3.2 (2016-10-31) -- "Sincere Pumpkin Patch"
 Copyright (C) 2016 The R Foundation for Statistical Computing
 Platform: x86_64-redhat-linux-gnu (64-bit)
-
-R is free software and comes with ABSOLUTELY NO WARRANTY.
-You are welcome to redistribute it under certain conditions.
-Type 'license()' or 'licence()' for distribution details.
-
-  Natural language support but running in an English locale
-
-R is a collaborative project with many contributors.
-Type 'contributors()' for more information and
-'citation()' on how to cite R or R packages in publications.
-
-Type 'demo()' for some demos, 'help()' for on-line help, or 'help.start()' for an HTML browser interface to help.
-Type 'q()' to quit R.
 
 > fst <- read.table("HvS_OneSampPerInd.weir.fst",header=T)
 > str(fst)
@@ -136,7 +143,17 @@ null device
 * The second line asks for a histogram plot of the data, specifying the x-axis to be broken into 20 bins and to plot each bar in red
 * The last line turns the plotting device (dev) off. This tells R to save and close the plot. If you look in your home directoty on the server, you'll see you pdf waiting for you….
 
-To end your **R** session and return to the command line, type:
+
+
+Let's also bring in the Allele Frequency results we got from VCFtools. Two interesting results to look for are:
+
+1.   Calculating allele frequency differences between Healthy vs. Sick individuals for each SNP
+
+	2. Calculate the Site Frequency Spectrum (SFS), which is simply a histogram of the allele frequencies across loci
+
+    ​
+
+When you're done, end your **R** session and return to the command line:
 
 ```bash
 > quit()
@@ -160,7 +177,7 @@ What do our sea star data have to say about this? Or more importantly: ***where 
 
 
 
-Estimating piS and piN on the entire dataset will take some time. Let's try and set this up at the end of the day and let it run. We'll use the piNpiS program from Gayral et al. (2013) to run this. You only need a single input file, which is a FASTA formatted sequence file that is output from **reads2snps**
+Estimating piS and piN on the entire dataset will take some time. Let's try and set this up at the end of the day and let it run. We'll use the piNpiS program from Gayral et al. (2013) to run this. We only need a single input file, which is a FASTA formatted sequence file that is output from **reads2snps**
 
 ```bash
 $ cd /data/project_data/snps/reads2snps
