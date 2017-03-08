@@ -59,7 +59,6 @@ summary(res)
 # low counts [2]   : 743, 62% 
 # (mean count < 25)
 
-Try extracting just the genes showing significant DE at a given threshold of 1% (=0.01)
 res_sig <- res[which(res$padj<0.01),]
 dim(res_sig)
 
@@ -130,7 +129,8 @@ head(res_HXL)
 
 summary(res_HXL)
 
-
+res_HXL_sig <- res_HXL[which(res_HXL$padj<0.01),]
+dim(res_HXL_sig)
 
 ################################################################
 # Data quality assessment by sample clustering and visualization 
