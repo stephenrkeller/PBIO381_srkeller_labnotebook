@@ -1,0 +1,67 @@
+     ####################################################################
+     # Identity-By-State (IBS) Analysis
+     #
+     
+     # open
+     genofile <- snpgdsOpen(snpgdsExampleFileName())
+     
+     RV <- snpgdsIBS(genofile)
+     m <- 1 - RV$ibs
+     colnames(m) <- rownames(m) <- RV$sample.id
+     GeneticDistance <- as.dist(m[1:45, 1:45])
+     HC <- hclust(GeneticDistance, "ave")
+     plot(HC)
+     
+     # close the file
+     snpgdsClose(genofile)
+     
+####################################################################
+
+vcf <- ("SSW_all_biallelic.MAF0.02.Miss0.8.recode.vcf")
+snpgdsVCF2GDS(vcf, "vcf.gds", method="biallelic.only")
+vcf.gds <- snpgdsOpen("vcf.gds")
+snpgdsSummary(vcf.gds)
+pca <- snpgdsPCA(vcf.gds, autosome.only=F, num.thread=2)
+
+pops <- read.table("SSW_disease.pops", header=F)
+popcode <- pops[order(pops$V1),2]
+     
+par(mfrow=c(1,2))
+pdf("PCA.pdf")
+     
+plot(pca$eigenvect[,1],pca$eigenvect[,2], main="PCA with all SNPs", xlab="Principal Component axis 1", cex.lab=1.5, cex.axis=1.5, ylab="Principal Component axis 2", col=as.factor(popcode), pch=20, cex=3)
+legend("topright", cex=1, legend=levels(as.factor(popcode)), pch=20, col=1:nlevels(as.factor(popcode)))
+
+plot(pca$eigenvect[,2],pca$eigenvect[,3], main="PCA with all SNPs", xlab="Principal Component axis 2", cex.lab=1.5, cex.axis=1.5, ylab="Principal Component axis 3", col=as.factor(popcode), pch=20, cex=3)
+legend("topright", cex=1, legend=levels(as.factor(popcode)), pch=20, col=1:nlevels(as.factor(popcode)))
+
+     dev.off()
+     
+
+TO DO:
+
+1. Update class on 24 ind vcf file -- have them re-do filtering and output to their home dir
+2. Re-do pop files for tidal and disease
+3. vcftools for allele freqs for H/S and tidal/sub
+4. vcftools for Fst for H/S and tidal/sub
+5. download output files from vcftools (and piSpiN?) to local machines
+5. bring into R
+	-merge allele freqs for HvSi and TvSu
+	-calc allele freq diffs and plot histogram
+	-plot histogram Fst
+	
+6. IF TIME:
+	-start piSpiN script and run
+	-take piSpiN results from previous run and calculate Ne
+	-make plots in R with SSW + Romiguier data
+	-Introduce SNPRelate for doing PCA
+		-download vcf file and pop files to local machines
+		-install SNPRelate
+		-go over script for PCA and plots
+	-Introduce ADMIXTURE
+		-go over file conversion with PGDSpider
+		-get geno files and edit ADMIX.sh script
+		-run
+     
+     
+     
