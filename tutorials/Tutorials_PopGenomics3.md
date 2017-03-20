@@ -4,20 +4,20 @@
 
 ### March 20, 2017
 
-Today, we'll finish up our calculations of allele frequencies and nucleotide diversity in the SSW data, before moving onto testing if there's population structure (next session). 
+Today, we'll finish up our calculations of allele frequencies and nucleotide diversity in the SSW data, before moving on to testing if there's population structure (in the next session). 
 
-First, recall that our previous SNP vcf file had 22 of 24 individuals in it. I found the missing 2 individuals (!) and called SNPs for all 24 individuals now using **reads2snps**. 
+First, recall that our previous SNP vcf file had 22 of 24 individuals in it. I found the missing 2 individuals (!) and have now called SNPs for all 24 individuals using **reads2snps**. 
 
 **PATH TO THE FINAL VCF DATA (all 24 INDS):** 
 
 ```
-/data/_project_data/snps/reads2snps/SSW_by24inds.txt.vcf.gz
+/data/project_data/snps/reads2snps/SSW_by24inds.txt.vcf.gz
 ```
 
 * *Use VCFTools to filter genotypes and save in your home directory in gzipped format:*
 
 ```bash
-$ cd /data/_project_data/snps/reads2snps/
+$ cd /data/project_data/snps/reads2snps
 $ vcftools --gzvcf SSW_by24inds.txt.vcf.gz --min-alleles 2 --max-alleles 2 --maf 0.02 --max-missing 0.8 --recode --out ~/SSW_all_biallelic.MAF0.02.Miss0.8  
 $ cd ~/
 $ gzip SSW_all_biallelic.MAF0.02.Miss0.8.recode.vcf
@@ -27,26 +27,27 @@ $ gzip SSW_all_biallelic.MAF0.02.Miss0.8.recode.vcf
 
 ## Estimate allele frequencies in H and S:##
 
-**Let's compare the SNP frequencies for all loci between Healthy and Sick animals**. Perhaps there are some loci that contribute to a difference in pathogen susceptibility, which could be identified this way. Let's take a look.
+**Let's compare the SNP frequencies for all loci between Healthy and Sick animals**. Perhaps there are some loci that contribute to a difference in pathogen susceptibility, which could be identified this way? Let's take a look.
 
-First, we need to re-create our text files containing the individual ID's for just Sick (and later, just Healthy) individuals. These meta-data are in the following file:
+First, we need to re-create our text files containing the individual ID's for just Sick (and separately, just Healthy) individuals. These meta-data are in the following file:
 
 ```
 /data/project_data/snps/reads2snps/ssw_healthloc.txt
 ```
 
-Remember how to parse this file on the command line to get *just the **healthy** individual IDs*? Here's the strategy at the command-line:
+Remember how to parse this file on the command line to get *just the **healthy** individual IDs*? Here's the strategy:
 
 * Use **grep** to match rows of data for disease trajectory
-* Pipe the results to **cut** to grab just the 1st column corresponding to sample ID (-f1). 
-* Save this to your home directory and name it: **"H_SampleIDs.txt"**
+* Pipe the results to **cut** to grab just the 1st column (-f1) corresponding to sample ID's. 
+* Save the output to your home directory and name it: **"H_SampleIDs.txt"**
 
 ```bash
+$ cd /data/project_data/snps/reads2snps/
 $ grep "HH" ssw_healthloc.txt | cut -f1 >~/H_SampleIDs.txt
 ```
 
 * Confirm  that there are 8 individuals in your output file.
-* Do the same for Sick individuals, saving to your home directory as: **"S_SampleIDs.txt"**. The **grep** command here is a little different, since we want to match *either* HS *or* SS.  The "\\|" part of the match tells  **grep** match HS *OR* SS
+* Do the same for Sick individuals, saving to your home directory as: **"S_SampleIDs.txt"**. The **grep** command here is a little different, since we want to match *either* HS *or* SS.  The "\\|" part of the match tells  **grep** to match HS *OR* SS
 
 ```bash
 $ grep "HS\|SS" ssw_healthloc.txt | cut -f1 >~/S_SampleIDs.txt
@@ -61,7 +62,7 @@ Now call VCFtools on your filtered gzipped vcf file saved in your home directory
 **Allele Frequencies between Healthy and Sick individuals:**
 
 ```bash
-$ cd ~/path to your filtered vcf file in your home directory...
+$ cd ~/<path to your filtered vcf file in your home directory>
 $ vcftools --gzvcf SSW_all_biallelic.MAF0.02.Miss0.8.recode.vcf.gz --freq2 --keep H_SampleIDs.txt --out H_AlleleFreqs
 ```
 
@@ -71,7 +72,7 @@ $ vcftools --gzvcf SSW_all_biallelic.MAF0.02.Miss0.8.recode.vcf.gz --freq2 --kee
 
 
 
-Let's also calculate Wright's Fst between H and S groups, which standardizes allele frequency difference based on the mean within groups. 
+Let's also calculate Wright's Fst between H and S groups, which standardizes allele frequency differences based on the mean frequencies within groups. 
 
 **Fst between Healthy and Sick individuals:**
 
@@ -88,7 +89,7 @@ Now, we can import these datasets into **R** and make some plots to examine how 
    1. DELETE:   {Freq}
    2. REPLACE with:   H_REF <tab> H_ALT
    3. Do the same for the **S_AlleleFreqs.frq** file...
-3. Open **R**, paste the following into an R script and work through it:
+3. Open **R**, paste the following into an R script, and work through it:
 
 ```R
 # Set your working directory to where you downloaded your results files:
@@ -105,15 +106,15 @@ S_freq <- read.table("S_AlleleFreqs.frq", header=T)
 All_freq <- merge(H_freq, S_freq, by=c("CHROM", "POS"))
 
 # Check the results of your merge to make sure things look OK
-str(All_freq)
+str(All_freq) # shows the structure of the data
 head(All_freq)
 
 # Looks good, now let's calculate the difference in minor allele frequency at each SNP and plot as a histogram
-All_freq$diff <- All_freq$H_ALT - All_freq$S_ALT
+All_freq$diff <- (All_freq$H_ALT - All_freq$S_ALT)
 
 hist(All_freq$diff, breaks=50, col="red", "Allele frequency difference (H-S)")
 
-# Looks like most loci show little difference (i.e., mostly drift), but perhaps a few show very large differences between healthy and sick
+# Looks like most loci show little difference (i.e., likely drift), but perhaps a few show very large differences between healthy and sick (drift or selection?)
 
 # How do these highly divergent frequenices compare to Fst at the same SNPs?
 fst <- read.table("HvS_Fst.weir.fst", header=T)
@@ -151,7 +152,7 @@ $ /data/popgen/dNdSpiNpiS_1.0 -alignment_file=SSW_by24inds.txt.fas -ingroup=sp -
 
 
 
-While we wait for that to chug along (it'll calculate confidence intervals from 10,000 bootstraps…which takes ~ 5 hours on our data), we can look at the summary output from the smaller VCF file run previously on just 1 sample library per individual
+While we wait for that to chug along (it'll calculate confidence intervals from 10,000 bootstraps…which takes ~5 hours on our data), we can look at the summary output from the smaller VCF file run previously on just 1 sample library per individual:
 
 * ```bash
   $ cat SSW_bamlist.txt.sum
@@ -182,27 +183,28 @@ list.files()
 Rom <- read.csv("Romiguier_nature13685-s3.csv", header=T)
 
 # Import OK?
-str(Rom) # shows the structure of the data
+str(Rom) 
 head(Rom)
 
-# Looks good; now let's look at how the strength of purifying selection (piN/piS) compares to the size of Ne (piS)
+# Looks good!
+# Now let's look at how the strength of purifying selection (piN/piS) compares to the size of Ne (piS). We'll plot these on a log scale to linearize the relationship.
 plot(log(Rom$piS), log(Rom$piNpiS), pch=21, bg="blue", xlab="log Synonymous Nucleotide Diversity (piS)", ylab="log Ratio of Nonysn to Syn Diversity (piN/piS)", main="Purifying Selection vs. Effective Population Size")
 
-# Now let's add in our estimates from the SSW data
-points(log(0.00585312), log(0.264041), pch=24, cex=1.5, bg="red") # adds our SSW points to the existing plot and gives them a different symbol
+# Now let's add our SSW points to the existing plot and give them a different symbol
+points(log(0.00585312), log(0.264041), pch=24, cex=1.5, bg="red") 
 
-# We can add the regression line to the plot to see how far off the SSW estimates are from expectation
+# We can also add a regression line to the plot to see how far off the SSW estimates are from expectation
 reg <- lm(log(Rom$piNpiS) ~ log(Rom$piS)) # Fits a linear regression
-abline(reg) # adds the line to the plot
+abline(reg) # adds the regression line to the plot
 
-# What about highlighting the other echinoderms in the dataset...do our seastars behave similarly?
+# It would be useful to highlight the other echinoderms in the dataset...do our seastars behave similarly?
 echino <- Rom[which(Rom$Phylum=="Echinodermata"),] # subsets the data
 points(log(echino$piS), log(echino$piNpiS), pch=21, bg="red") # adds the points
 
 # Lastly, let's add a legend:
 legend("bottomleft", cex=1, legend=c("Metazoans", "Echinoderms", "P. ochraceus"), pch=c(21,21,24), col=c("blue", "red", "red"))
 
-# Pisaster seems to be in a group with other echinoderms that have relaxed purifying selection given their Ne...Interesting! Perhaps they went through a common demographic shift together, such as an historical bottleneck.
+# Pisaster seems to be in a group with other echinoderms that have relaxed purifying selection (high piN/piS), given their Ne...Interesting! Can we hypothesize why this might be?
 ```
 
 
