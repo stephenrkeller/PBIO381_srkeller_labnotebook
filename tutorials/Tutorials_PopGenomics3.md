@@ -112,7 +112,7 @@ head(All_freq)
 # Looks good, now let's calculate the difference in minor allele frequency at each SNP and plot as a histogram
 All_freq$diff <- (All_freq$H_ALT - All_freq$S_ALT)
 
-hist(All_freq$diff, breaks=50, col="red", "Allele frequency difference (H-S)")
+hist(All_freq$diff, breaks=50, col="red", main="Allele frequency difference (H-S)")
 
 # Looks like most loci show little difference (i.e., likely drift), but perhaps a few show very large differences between healthy and sick (drift or selection?)
 
