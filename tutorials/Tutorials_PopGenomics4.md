@@ -1,16 +1,18 @@
+
+
 P/BIO381 Tutorials
 
 ## Population Genomics 4: Population Structure with PCA and ADMIXTURE
 
-### March 22, 2017
+### March 27, 2017
 
 Our next goal is to look for the presence of population structure in our sample of sea stars. Recall that these animals were all collected from the same general geographic area, and the dispersal ability of sea star gametes and juvelines is pretty impressive. So, we don't necessarily expect to find a lot of structure, but one nevers knows without checking...
 
 We'll take 2 different approaches to test if there is any population structure present in our sample: 
 
-1. A Principal Component Analysis (PCA) on the SNPs to see if they group by sampling locality
+1. Principal Component Analysis (PCA) and related analyses on the SNPs to see if they group by sampling locality or disease status
 
-2. We'll use the ADMIXTURE program to cluster genotypes into  *K*  groups, in which we'll vary *K* from 1 - 10. 
+2. The maximum likelihood ADMIXTURE program to cluster genotypes into *K*  groups, in which we'll vary *K* from 1 - 10
 
    ​
 
@@ -46,8 +48,8 @@ install.packages("vcfR") # reads in vcf files and proides tools for file convers
 install.packages("adegenet") # pop-genetics package with some handy routines, including PCA and other multivariate methods (DAPC)
 
 # ...and load the libraries
-library(adegenet)
 library(vcfR)
+library(adegenet)
 
 #Read the vcf SNP data into R
 vcf1 <- read.vcfR("SSW_all_biallelic.MAF0.02.Miss0.8.recode.vcf")
@@ -59,10 +61,11 @@ print(gl1) # Looks good! Right # of SNPs and individuals!
 # For info, try:
 gl1$ind.names
 gl1$loc.names[1:10]
+gl1$chromosome[1:3]
 
 # Notice there's nothing in the field that says "pop"? Let's fix that...
 ssw_meta <- read.table("ssw_healthloc.txt", header=T) # read in the metadata
-ssw_meta <- ssw_meta[order(ssw_meta$Individual),] # sort it by Individual ID
+ssw_meta <- ssw_meta[order(ssw_meta$Individual),] # sort by Individual ID, just like the VCF file
 
 # Confirm the ID's are ordered the same in gl1 and ssw_meta:
 gl1$ind.names
@@ -71,11 +74,64 @@ ssw_meta$Individual
 gl1$pop <- ssw_meta$Locality # assign locality info
 gl1$other <- as.list(ssw_meta$Trajectory) # assign disease status
 
+# WE can explore the structure of our SNP data using the glPlot function, which gives us a sample x SNP view of the VCF file
+glPlot(gl1, posi="bottomleft")
+
 # Now, let's compute the PCA on the SNP genotypes and plot it:
-PCA1 <- glPca(gl1, nf=4) 
-PCA1 # prints summary
-scatter(PCA1, label=gl1$pop) # plots PCA scores and labels by locale
-loadingplot(pca1) # which SNPs load most strongly on the 1st PC axis?
+pca1 <- glPca(gl1, nf=4) # nf = number of PC axes to retain (here, 4)
+pca1 # prints summary
+
+# Plot the individuals in SNP-PCA space, with locality labels:
+plot(pca1$scores[,1], pca1$scores[,2], 
+     cex=2, pch=20, col=gl1$pop, 
+     xlab="Principal Component 1", 
+     ylab="Principal Component 2", 
+     main="PCA on SSW data (Freq missing=20%; 5317 SNPs)")
+legend("topleft", 
+       legend=unique(gl1$pop), 
+       pch=20, 
+       col=c("black", "red"))
+
+# Perhaps we want to show disease status instead of locality:
+plot(pca1$scores[,1], pca1$scores[,2], 
+     cex=2, pch=20, col=as.factor(gl1$other$Trajectory), 
+     xlab="Principal Component 1", 
+     ylab="Principal Component 2", 
+     main="PCA on SSW data (Freq missing=20%; 5317 SNPs)")
+legend("topleft", 
+       legend=unique(gl1$other$Trajectory), 
+       pch=20, 
+       col=as.factor(unique(gl1$other$Trajectory)))
+
+# Which SNPs load most strongly on the 1st PC axis?
+loadingplot(abs(pca1$loadings[,1]),
+            threshold=quantile(abs(pca1$loadings), 0.999))
+
+# Get their locus names
+gl1$loc.names[which(quantile(abs(pca1$loadings)>0.999)]
+```
+
+
+
+If you have *a-priori* defined groups, another way to analyze SNP-PCA information is with a discriminant analysis. This is known as **Discriminant Analysis of Principal Components (DAPC)**, and is a very useful means of finding the SNPs that *most* differentiate your samples for a variable of interest. [Read more on this method here](https://bmcgenet.biomedcentral.com/articles/10.1186/1471-2156-11-94). 
+
+For our data, we might choose to perform DAPC based on *a-priori* disease status designations...
+
+```R
+# Run the DAPC using disease status to group samples
+disease.dapc <- dapc(gl1, pop=gl1$other$Trajectory, n.pca=8, n.da=3,
+     var.loadings=T, pca.info=T)
+
+# Scatterplot of results
+scatter.dapc(disease.dapc, grp=gl1$other$Trajectory, legend=T)
+
+# Plot the posterior assignment probabilities to each group
+compoplot(disease.dapc)
+
+# Which loci contribute the most to distinguishing Healthy vs. Sick individuals?
+loadingplot(abs(disease.dapc$var.load), 
+            lab.jitter=1, 
+            threshold=quantile(abs(disease.dapc$var.load), probs=0.999))
 ```
 
 ------------------------------------------
@@ -95,15 +151,36 @@ And as with any good software, there is also a well annotated [manual](https://w
 
 ADMIXTURE introduces a user-defined number of groups or clusters (known as K) and uses maximum likelihood to estimate allele frequencies in each cluster, and assign each individual ancestry (Q) to one or more of these clusters. 
 
-From a practical standpoint, ADMIXTURE is pretty easy to run. At a minimum, it just needs an input file and the requested level of K to investigate. Unfortunately, getting the data formatted properly for input is a real pain for non-model organisms. 
+To run ADMIXTURE, we need to provide an input file and the requested level of K to investigate. Unfortunately, getting the data formatted properly for input is a bit of a pain. 
 
-I used the program [pgdspider](http://www.cmpg.unibe.ch/software/PGDSpider/) to convert from our vcf files to .geno. The ready to go file is located on our server here:
+The program [PGDSpider](http://www.cmpg.unibe.ch/software/PGDSpider/) is able to convert vcf files to .geno format, which ADMIXTURE can read. This requires 4 files:
+
+* the input data file in vcf format
+* a text file with sample IDs and the population designations
+* a settings file (.spid) that tells PGDSpider how to process the data
+* a bash script that runs the program with all the above settings specified
+
+**Lucky for you, I've already done this!**  But, here are the files for future reference, in case you need to do this yourself down the road...
 
 ```
+/data/project_data/snps/reads2snps/SSW_tidal.pops
+/data/project_data/snps/reads2snps/vcf2admixture_SSW.spid
+/data/project_data/snps/reads2snps/vcf2admixture.sh
+```
+
+
+
+The ready-to-go geno file is located on our server here:
+
+```bash
 /data/project_data/snps/reads2snps/SSW_all_biallelic.MAF0.02.Miss0.8.recode.vcf.geno
 ```
 
-In the same path, you should also see a bash script file called:  `ADMIX.sh`
+In the same path, you should also see a bash script:
+
+```bash
+/data/project_data/snps/reads2snps/ADMIX.sh
+```
 
 Use **cp** to copy the .geno and ADMIX.sh files to your *home directory on the server*, then **cd** there and confirm the files are present.
 
@@ -126,7 +203,9 @@ admixture -C 0.000001 --cv ./SSW_all_biallelic.MAF0.02.Miss1.0.recode.vcf.geno $
 
 done
 
-grep "CV" log*.out >chooseK.txt
+# After the for loop finishes, you can use 'grep' to grab the values of the CV from each separate log file and append them into a new summary text file.
+
+grep CV log*.out >chooseK.txt
 ```
 
 
@@ -137,11 +216,9 @@ When you're ready to go, exit vim to return to the command line, and execute the
 $ bash ADMIX.sh
 ```
 
-
-
 The cross-validation procedure in ADMIXTURE breaks the samples into 5 equally sized chunks. It then masks each chunk in turn, trains the model to estimate the allele frequencies and ancestry assignments on the unmasked data, and then attempts to predict the genotype values for the masked individuals. 
 
-**If the model is good (and there's true structure in the data), then the best value of K is the one that will *minimize* the cross-validation (CV) error.**
+**If the model is good (and there's true structure in the data), then the best value of K is the one that will *minimize* the cross-validation (CV) error. This is shown in the example plot below (not our SSW data)**
 
 ![ADMIXTURE CV](https://www.researchgate.net/profile/Jason_Hodgson/publication/263579532/figure/download/fig3/AS:392426666643462@1470573216485/Figure-S1-Plot-of-ADMIXTURE-cross-validation-error-from-K2-through-K6-We-chose-K3-to.png)The CV values for our runs are stored in the output file "chooseK.txt"
 

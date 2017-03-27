@@ -18,7 +18,7 @@ This notebook will be a repository of all my online work throughout the semester
 * [Page 5: 2017-02-22](#id-section5). RNASeq differential expression in DESeq2
 * [Page 6: 2017-02-27](#id-section6) RNASeq cont…learning to build custom DE models in DESeq2
 * [Page 7 2017-03-05:](#id-section7) Background work for calling SNPs in the mapped RNASeq reads. 
-* [Page 8:](#id-section8).
+* [Page 8 2017-03-30:](#id-section8). Prep for selection scans
 * [Page 9:](#id-section9).
 * [Page 10:](#id-section10).
 * [Page 11:](#id-section11).
@@ -235,7 +235,61 @@ Worked on this awhile today. Identified the following issues:
 
 ------
 <div id='id-section8'/>
-### Page 8:
+### Page 8: Prep for selection scans
+
+After looking at the SSW SNP data for population structure (there isn't much), we want to test for divergent selection between Healthy and Sick status animals using 'BAYESCAN'. I'll use PGDSpider to convert from vcf > GESTE/BAYESCAN format.
+
+Path: `~/PopGenmics/ssw/`
+
+* Input files:
+  * SSW_bayescan_disease.pops 
+    * Total N = 22 —> HH: N = 8; SS or HS: N = 14
+  * SSW_all_biallelic.MAF0.02.Miss0.8.recode.vcf
+    * N = 24; 5317 SNPs
+  * vcf2bayescan.spid
+    * settings file for conversion with PGDSpider
+  * vcf2bayescan.sh
+    * bash script that calls PGDSpider and runs conversion
+
+Problem: there are 2 individuals (37 and 38) with 'MM' health status in the data. These don't have a reliable disease scoring, and so we are going to exclude them. Need to get them out of our vcf file using vcftools *—remove-indv* option
+
+```
+$ vcftools --gzvcf SSW_all_biallelic.MAF0.02.Miss0.8.recode.vcf.gz --remove-indv 37 --remove-indv 38 --recode --out SSW_all_biallelic.MAF0.02.Miss0.8.recode.22inds
+```
+
+All good. Now set up bash script to run BAYESCAN with following settings:
+
+```bash
+#!/bin/bash
+# PBIO/BIO 381: Spring 2017
+# This script runs the program 'Bayescan' designed to identify markers under diversifying or balancing selection by analyzing SNP divergence among populations 
+
+bayescan SSW_all_biallelic.MAF0.02.Miss0.8.recode.bayescan \
+ -threads 10 \
+# The number of threads you want to use for processing
+ -n 5000 \
+# The number of samples of the mcmc chain to output for calculating the posterior probabilities
+ -thin 10 \
+# The thinning interval between recorded samples for the mcmc chain. The total number of mcmc iterations is the number of samples * the thinning interval
+ -nbp 20 \
+# The number of pilot runs to make for tuning the initial model parameters
+ -pilot 5000 \
+# The length of the pilot runs
+ -burn 50000 \
+# The length of the burn-in period to discard before recording samples from the posterior
+ -pr_odds 10 \
+# The prior odds for the probability that a locus is neutral and not under any selection
+ -od ./
+# Sets the directory for putting results
+```
+
+* Things to think about:
+  * Set up different population contrast: 
+    * intertidal vs. subtidal
+  * Try different pr_odds ratio: 
+    * These are transcriptome data, so higher prob that 1 or more loci are under selection, or nearby to a SNP under selection
+    * Previously, we've used 10,000 for pr_odds in GBS data (see also Lotterhos and Whitlock's papers on this issue); I think this would be too stringent on RNASeq SNPs where locii are closely linked per transcript
+
 ------
 <div id='id-section9'/>
 ### Page 9:
