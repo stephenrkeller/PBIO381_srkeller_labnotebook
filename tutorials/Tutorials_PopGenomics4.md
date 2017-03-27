@@ -4,7 +4,7 @@ P/BIO381 Tutorials
 
 ## Population Genomics 4: Population Structure with PCA and ADMIXTURE
 
-### March 27, 2017
+### March 27, 2017 (revised after class to correct typos)
 
 Our next goal is to look for the presence of population structure in our sample of sea stars. Recall that these animals were all collected from the same general geographic area, and the dispersal ability of sea star gametes and juvelines is pretty impressive. So, we don't necessarily expect to find a lot of structure, but one nevers knows without checking...
 
@@ -71,14 +71,17 @@ ssw_meta <- ssw_meta[order(ssw_meta$Individual),] # sort by Individual ID, just 
 gl1$ind.names
 ssw_meta$Individual
 
-gl1$pop <- ssw_meta$Locality # assign locality info
-gl1$other <- as.list(ssw_meta$Trajectory) # assign disease status
+gl1$pop <- ssw_meta$Location # assign locality info
+
+# THIS IS THE LINE OF CODE THAT WAS CAUSING US ISSUES IN CLASS! HERE, I'VE CORRECTED IT TO ASSIGN ALL FIELDS IN THE META-DATA FOR 'ssw_meta' AS A LIST OF VARIABLES IN 'gl1$other'. FROM HERE ON, THE CODE SHOULD WORK FINE. 
+gl1$other <- as.list(ssw_meta) # assign disease status
 
 # WE can explore the structure of our SNP data using the glPlot function, which gives us a sample x SNP view of the VCF file
 glPlot(gl1, posi="bottomleft")
 
 # Now, let's compute the PCA on the SNP genotypes and plot it:
-pca1 <- glPca(gl1, nf=4) # nf = number of PC axes to retain (here, 4)
+pca1 <- glPca(gl1, nf=4, parallel=F) # nf = number of PC axes to retain (here, 4)
+
 pca1 # prints summary
 
 # Plot the individuals in SNP-PCA space, with locality labels:
@@ -108,7 +111,7 @@ loadingplot(abs(pca1$loadings[,1]),
             threshold=quantile(abs(pca1$loadings), 0.999))
 
 # Get their locus names
-gl1$loc.names[which(quantile(abs(pca1$loadings)>0.999)]
+gl1$loc.names[which(abs(pca1$loadings)>quantile(abs(pca1$loadings), 0.999))]
 ```
 
 
@@ -120,7 +123,7 @@ For our data, we might choose to perform DAPC based on *a-priori* disease status
 ```R
 # Run the DAPC using disease status to group samples
 disease.dapc <- dapc(gl1, pop=gl1$other$Trajectory, n.pca=8, n.da=3,
-     var.loadings=T, pca.info=T)
+     var.loadings=T, pca.info=T, parallel=F)
 
 # Scatterplot of results
 scatter.dapc(disease.dapc, grp=gl1$other$Trajectory, legend=T)

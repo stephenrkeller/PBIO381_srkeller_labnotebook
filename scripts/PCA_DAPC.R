@@ -27,7 +27,21 @@ plot(pca1$scores[,1], pca1$scores[,2],
      xlab="Principal Component 1", 
      ylab="Principal Component 2", 
      main="PCA on SSW data (Freq missing=20%; 5317 SNPs)")
-legend("topleft", legend=unique(gl1$pop), pch=20, col=c("black", "red"))
+legend("topleft", 
+       legend=unique(gl1$pop), 
+       pch=20, 
+       col=c("black", "red"))
+
+plot(pca1$scores[,1], pca1$scores[,2], 
+     cex=2, pch=20, col=as.factor(gl1$other$Trajectory), 
+     xlab="Principal Component 1", 
+     ylab="Principal Component 2", 
+     main="PCA on SSW data (5317 SNPs)")
+legend("topleft", 
+       legend=unique(gl1$other$Trajectory), 
+       pch=20, 
+       col=as.factor(unique(gl1$other$Trajectory)))
+
 
 loadingplot(abs(pca1$loadings[,1]))  
 loadingplot(abs(pca1$loadings[,1]), threshold=quantile(abs(pca1$loadings), 0.999))
@@ -85,7 +99,7 @@ loadingplot(abs(pca2$loadings[,1]), fac=gl2$chromosome, byfac=T, threshold=0.5)
 
 # DAPC
 # On tidal groups
-d1 <- dapc(gl1, pop=gl1$pop, n.pca=8, n.da=4,
+d1 <- dapc(gl2, pop=gl1$pop, n.pca=8, n.da=4,
            var.loadings=T, pca.info=T,
            pca.select=c("nbEig", "percVar"))
 
@@ -94,15 +108,15 @@ compoplot(d1)
 assignplot(d1)
 
 # On disease groups
-d2 <- dapc(gl1, pop=gl1$other$Trajectory, n.pca=8, n.da=4,
+d2 <- dapc(gl2, pop=gl1$other$Trajectory, n.pca=8, n.da=4,
      var.loadings=T, pca.info=T,
      pca.select=c("nbEig", "percVar"))
 
 scatter.dapc(d2, grp=gl1$other$Trajectory, legend=T)
 compoplot(d2)
-assignplot(d2)
+#assignplot(d2)
 
-loadingplot(d1$var.contr, lab.jitter=1, threshold=quantile(d1$var.contr, probs=0.99))
+loadingplot(abs(d2$var.load, lab.jitter=1, threshold=quantile(abs(d2$var.load), probs=0.999))
 
 
 
