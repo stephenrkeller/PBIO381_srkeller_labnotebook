@@ -12,9 +12,16 @@ vcf1 <- read.vcfR("SSW_all_biallelic.MAF0.02.Miss0.8.recode.vcf")
 ssw_meta <- read.table("ssw_healthloc.txt", header=T)
 ssw_meta <- ssw_meta[order(ssw_meta$Individual),]
 
-gl1 <- vcfR2genlight(vcf1)
-gl1$pop <- ssw_meta$Location
-gl1$other <- as.list(ssw_meta)
+ssw_meta2 <- droplevels(ssw_meta[1:22,])
+ssw_meta2$Disease <- factor(rep(NA, length(ssw_meta2$Trajectory)), levels=c("Healthy", "Sick") )   
+ssw_meta2$Disease[ssw_meta2$Trajectory %in% c("HS", "SS")] <- "Sick"
+ssw_meta2$Disease[ssw_meta2$Trajectory %in% "HH"] <- "Healthy"
+
+
+# This is to drop the last 2 individuals that are MM from the analysis
+gl1 <- vcfR2genlight(vcf1[,1:23])
+gl1$pop <- ssw_meta2$Location
+gl1$other <- as.list(ssw_meta2)
 
 glPlot(gl1, posi="bottomleft") #plots heatmap of samples x loci
 
@@ -99,7 +106,7 @@ loadingplot(abs(pca2$loadings[,1]), fac=gl2$chromosome, byfac=T, threshold=0.5)
 
 # DAPC
 # On tidal groups
-d1 <- dapc(gl2, pop=gl1$pop, n.pca=8, n.da=4,
+d1 <- dapc(gl1, pop=gl1$pop, n.pca=8, n.da=4,
            var.loadings=T, pca.info=T,
            pca.select=c("nbEig", "percVar"))
 
@@ -108,7 +115,8 @@ compoplot(d1)
 assignplot(d1)
 
 # On disease groups
-d2 <- dapc(gl2, pop=gl1$other$Trajectory, n.pca=8, n.da=4,
+
+d2 <- dapc(gl1, pop=gl1$other$Trajectory, n.pca=7, n.da=4,
      var.loadings=T, pca.info=T,
      pca.select=c("nbEig", "percVar"))
 
@@ -116,7 +124,13 @@ scatter.dapc(d2, grp=gl1$other$Trajectory, legend=T)
 compoplot(d2)
 #assignplot(d2)
 
-loadingplot(abs(d2$var.load, lab.jitter=1, threshold=quantile(abs(d2$var.load), probs=0.999))
+loadingplot(abs(d2$var.load), lab.jitter=1, threshold=quantile(abs(d2$var.load), probs=0.999))
 
+d2load <- as.data.frame(d2$var.load)
+d2load$outliers <- d2load$LD1>quantile(d2load$LD1, 0.999)
 
+d2loci <- cbind(gl1$loc.names, d2load)
 
+d2_outliers <- d2loci[which(d2loci$outliers=="TRUE"),]
+
+d2_outliers
