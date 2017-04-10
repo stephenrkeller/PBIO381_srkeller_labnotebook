@@ -19,7 +19,7 @@ This notebook will be a repository of all my online work throughout the semester
 * [Page 6: 2017-02-27](#id-section6) RNASeq cont…learning to build custom DE models in DESeq2
 * [Page 7 2017-03-05:](#id-section7) Background work for calling SNPs in the mapped RNASeq reads. 
 * [Page 8 2017-03-30:](#id-section8). Prep for selection scans
-* [Page 9:](#id-section9).
+* [Page 9 2017-04-10:](#id-section9).Qiime 16S analysis
 * [Page 10:](#id-section10).
 * [Page 11:](#id-section11).
 * [Page 12:](#id-section12).
@@ -292,7 +292,125 @@ bayescan SSW_all_biallelic.MAF0.02.Miss0.8.recode.bayescan \
 
 ------
 <div id='id-section9'/>
-### Page 9:
+### Page 9: 16S analysis
+
+Tutorial page: [16S day 1](https://adnguyen.github.io/2017_Ecological_Genomics/Tutorial/2017-04-10_16sAmipliconSeqData.html)
+
+Using Qiime for this.
+
+Have 100+ samples measured over 6 times points
+
+Qiime will cluster all sequences into an OTU table, and then assign taxonomy using 'Greengenes'
+
+Start with mapping file: 
+
+```
+/data/project_data/16s/map.txt
+```
+
+Barcode Sequence and LinkerPrimerSequence columns are empty (but need to be included for Qiime to be happy)
+
+Phenotype: sick or healthy at the time of sampling
+
+Pheno_num: How sick it was (0=healthy; 5=dead)
+
+Final_phenotype: What it was at the end
+
+Ran the following:
+
+```
+~/16s_analysis/validate_mapping_file.py -m /data/project_data/16s/map.txt -o validate_map -p -b
+```
+
+Look at html output file — OK to ignore missing data warnings
+
+Datafiles:
+
+```
+/data/project_data/16s/data_files/*.fq.gz
+```
+
+cd to home dir 16s_analysis/ and execute:
+
+```
+multiple_join_paired_ends.py -i /data/project_data/16s/data_files -o ~/16s_analysis/joined --read1_indicator _R1 --read2_indicator _R2
+```
+
+run bash scripts to rename output files:
+
+```
+bash /data/project_data/16s/remove-underscore.sh
+bash /data/project_data/16s/remove-R1.sh
+```
+
+Then demultiplex and clean reads (corrects a typo in the tutorial:
+
+```
+multiple_split_libraries_fastq.py -i ~/16s_analysis/joined -o ~/16s_analysis/filtered -m sampleid_by_file --include_input_dir_path --remove_filepath_in_name  --mapping_indicator ~/data/project_data/16s/map.txt
+```
+
+Now run extract seqs within the ./filtered directory
+
+```
+extract_seqs_by_sample_id.py -i seqs.fna -o test -s 04-5-05
+```
+
+Test looks fine (filled file) —> can now remove.
+
+Set up long extract now (~ 4 days)
+
+```
+pick_open_reference_otus.py -i ~/16s_analysis/filtered/seqs.fna -o ~/16s_analysis/otus  --parallel --jobs_to_start 1
+```
+
+2 different ways to extract OTUs
+
+Closed reference
+
+* you give it a database, and it picks the best
+
+Open reference
+
+* uses similarity of sequences without referencing a db
+
+CHeck a summary of the table to make sure all looks OK:
+
+```
+biom summarize-table -i /data/project_data/16s/otu_table/otu_table_mc2_w_tax_no_pynast_failures.biom
+
+Num samples: 176
+Num observations: 93033
+Total count: 8362869
+Table density (fraction of non-zero values): 0.028
+
+Counts/sample summary:
+ Min: 28412.0
+ Max: 77866.0
+ Median: 47051.500
+ Mean: 47516.301
+ Std. dev.: 7637.541
+ Sample Metadata Categories: None provided
+ Observation Metadata Categories: taxonomy
+
+Counts/sample detail:
+24-5-11: 28412.0
+07-5-11: 31532.0
+04-5-08: 32477.0
+07-5-05: 32491.0
+38-6-09: 33391.0
+...
+```
+
+Number of observations = # OTUs that got identified
+
+
+
+For next session: come with phyloseq installed in R and test the library
+
+
+
+
+
 ------
 <div id='id-section10'/>
 ### Page 10:

@@ -16,11 +16,11 @@ So far, we've been thinking about detecting sweeps within a single population. H
 
 ## Challenges for finding Fst outliers:##
 
-Fst measures the degree of allele frequncy differences between 2 or more groups of individuals. In most cases, these groups represent different spatially distinct populations. However, population demographic history (drift, bottlenecks, range expansions) can have a profound effect on the distribution of Fst, and often leads to increases in the number of high Fst loci, leading to false positives in scans for selective sweeps. Therefore, we need to be careful to separate out loci with high Fst due to neutral demographic history from those with high Fst due to natural selection. 
+Fst measures the degree of allele frequency differences between 2 or more groups of individuals. In most cases, these groups represent different spatially distinct populations. However, population demographic history (drift, bottlenecks, range expansions) can have a profound effect on the distribution of Fst, and often leads to increases in the number of high Fst loci, leading to false positives in scans for selective sweeps. Therefore, we need to be careful to separate out loci with high Fst due to neutral demographic history from those with high Fst due to natural selection. 
 
 On such approach that we'll use here was [recently published by Mike Whitlock and Katie Lotterhos](http://www.journals.uchicago.edu/doi/abs/10.1086/682949), called 'OutFLANK'. The overall goal is to use the expected neutral distribution of Fst between *n* groups based on established population genetic theory to identify observed loci that exceed the upper neutral distribution — these are our candidates for local selection. However, the basic population genetic model used to generate Fst  (the "Island Model") will fail under most realistic demographic scenarios that don't strictly follow the Island Model's assumptions of constant equal population sizes with equal and symmetric gene flow between groups. 
 
-OutFLANK's approach is to calculate the theoretical distribution of Fst that provides the best fit to *just the neutral loci in our sample*, given the (unknown) demographic history of our species. How does it do that? First, it trims out loci in the upper and lower tails of the distribution (these are most likely to be under selection). Then, it uses the remaining loci to fit a neutral distribution of Fst based on popgen theory. It then checks to see if this neutral distribution provides a good fit to the trimmed distribution. If it does, then it identifies outlier loci beyond the upper tail of the neutral distirbution as candidates for local adaptation. 
+OutFLANK's approach is to calculate the theoretical distribution of Fst that provides the best fit to *just the neutral loci in our sample*, given the (unknown) demographic history of our species. How does it do that? First, it trims out loci in the upper and lower tails of the distribution (these are most likely to be under selection). Then, it uses the remaining loci to fit a neutral distribution of Fst based on popgen theory. It then checks to see if this neutral distribution provides a good fit to the trimmed distribution. If it does, then it identifies outlier loci beyond the upper tail of the neutral distribution as candidates for local adaptation. 
 
 ![](http://www.nature.com/scitable/content/ne0000/ne0000/ne0000/ne0000/15836493/f1_nosil.jpg)
 
@@ -71,7 +71,7 @@ ssw_meta$Trajectory[which(ssw_meta$Trajectory=="MM")] = NA
   * Calculate Fst for each locus, based on divergence among the 3 disease groups (ssw_meta$Trajectory)
   * Trim back loci in the upper and lower 5% of the empirical Fst distribution, and eliminate low frequency SNPs (ones with expected heterozygosity, Hmin, < 0.1; equates to a MAF of ~0.05)
   * Re-fit the expected neutral Fst distribution to the data based on the presence of 3 groups in the data (NumberofSamples=3), and identify large Fst outliers in the upper tail based on a 10% false discovery rate (qthreshold=0.1). 
-  * Plot the results: The empirical distribution of Fst (bars) and the predicted neutral distribution (black line)
+  * Plot the results: The empirical distribution of Fst (yellow bars) and the predicted neutral distribution (black line)
 
 ```R
 OF_SNPs <- MakeDiploidFSTMat(ssw.geno.trans, locusNames=seq(1, 5317, by=1), popNames=ssw_meta$Trajectory)
@@ -140,12 +140,12 @@ vcfann[outliers,]
   scatter.dapc(disease.dapc, grp=gl1$other$Trajectory, legend=T)
 
   # Plot loci that contribute the most to distinguishing Healthy vs. Sick individuals (upper 0.1% of loadings)
-  loadingplot(abs(disease.dapc$var.load), 
+  loadingplot(disease.dapc$var.load, 
               lab.jitter=1, 
-              threshold=quantile(abs(disease.dapc$var.load), probs=0.999))
+              threshold=quantile(disease.dapc$var.load, probs=0.999))
 
   # What are the Trinity transcript ID's for these DAPC outliers?
-  gl1$chromosome[which(abs(disease.dapc$var.load)>quantile(abs(disease.dapc$var.load), 0.999))]
+  gl1$chromosome[which(disease.dapc$var.load>quantile(disease.dapc$var.load, 0.999))]
   ```
 
 * Do any of the DAPC outliers overlap with the selected SNPs identified by OutFLANK? 

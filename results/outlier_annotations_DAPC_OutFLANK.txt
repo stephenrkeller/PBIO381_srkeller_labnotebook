@@ -12,11 +12,16 @@ blastx best hit: XP_019615630.1
 SPRY domain-containing SOCS box protein 3
 
 *3. TRINITY_DN42222_c4_g2_TRINITY_DN42222_c4_g2_i1_g.12455_m
-blastn: no hits
-blastx: no hits
+n/a
 
-*TRINITY_DN46269_c0_g1_TRINITY_DN46269_c0_g1_i1_g.21774_m
-TRINITY_DN45253_c3_g1_TRINITY_DN45253_c3_g1_i2_g.18927_m
+*4. TRINITY_DN46269_c0_g1_TRINITY_DN46269_c0_g1_i1_g.21774_m
+PREDICTED: basic leucine zipper and W2 domain-containing protein 2 isoform X2 [Buceros rhinoceros silvestris]
+Sequence ID: XP_010143245.1Length: 419Number of Matches: 1
+
+
+5. TRINITY_DN45253_c3_g1_TRINITY_DN45253_c3_g1_i2_g.18927_m
+PREDICTED: SPRY domain-containing SOCS box protein 3 [Strongylocentrotus purpuratus]
+Sequence ID: XP_001181890.2Length: 447Number of Matches: 1
 
 --------------
 
