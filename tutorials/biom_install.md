@@ -1,4 +1,24 @@
-## Update on installing R packakes needed for phyloseq microbiome analysis
+### Update on creating your bio file for testing functional enrichment of your microbiome using Picrust
+
+Turns out that there are 2 different types of 'biom' formatted files — an older version called "JSON", and a newer version called "HDF5". By default, PICRUST outputs the new HDF5 version, but the libraries we will use in R will not recognize this! So, to make all the packages work together, we need to convert from out text formatted PICRUST output to JSON format, and then bring the JSON biom file into R.
+
+We'll do this on the class server. Follow these steps:
+
+1. cd to the directory with your *L3.biom file that you ouput as the last step of your PICRUST analysis; for a refresher, see [the tutorial](https://adnguyen.github.io/2017_Ecological_Genomics/Tutorial/2017-04-19_picrust.html)
+2. while in this directory, execute the following command:
+
+```
+biom convert -i metagenome_predictions.L3.txt -o metagenome_predictions.L3.json.biom --table-type="OTU table" --to-json
+
+```
+
+It should only take a few seconds. Then, download the new *.json.biom file to your desktop and follow Melanie's R script at the bottom of the [tutorial](https://adnguyen.github.io/2017_Ecological_Genomics/Tutorial/2017-04-19_picrust.html) to test for functional enrichment of the micro biome. NOTE, if you need help getting the packages installed to run this analysis, see below update:
+
+
+
+----------
+
+## Update on installing R packages needed for phyloseq microbiome analysis
 
 
 
