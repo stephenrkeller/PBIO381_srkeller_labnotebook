@@ -241,7 +241,7 @@ After looking at the SSW SNP data for population structure (there isn't much), w
 
 Path: `~/PopGenmics/ssw/`
 
-* Input files:
+* Input files: 
   * SSW_bayescan_disease.pops 
     * Total N = 22 —> HH: N = 8; SS or HS: N = 14
   * SSW_all_biallelic.MAF0.02.Miss0.8.recode.vcf
@@ -414,6 +414,15 @@ For next session: come with phyloseq installed in R and test the library
 ------
 <div id='id-section10'/>
 ### Page 10:
+
+
+
+```
+
+```
+
+
+
 ------
 <div id='id-section11'/>
 ### Page 11:
