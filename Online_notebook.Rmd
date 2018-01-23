@@ -416,6 +416,7 @@ For next session: come with phyloseq installed in R and test the library
 <div id='id-section10'/>
 ### Page 10: Welcome to a new semester!
 
+![](https://user-images.githubusercontent.com/12184909/35302287-d44b8874-0085-11e8-82ca-83f25bb03281.jpg)
 
 
 ```
