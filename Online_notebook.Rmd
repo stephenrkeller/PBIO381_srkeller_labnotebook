@@ -2,7 +2,6 @@
 
 ### Author: Stephen Keller     
 ### PBIO/BIO381: Ecological Genomics, 2017
-### PBIO/BIO381: Ecological Genomics, 2018
 
 ## Date started: (2017-01-18)   
 ## Date end:    
