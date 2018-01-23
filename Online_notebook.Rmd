@@ -2,6 +2,7 @@
 
 ### Author: Stephen Keller     
 ### PBIO/BIO381: Ecological Genomics, 2017
+### PBIO/BIO381: Ecological Genomics, 2018
 
 ## Date started: (2017-01-18)   
 ## Date end:    
@@ -20,7 +21,7 @@ This notebook will be a repository of all my online work throughout the semester
 * [Page 7 2017-03-05:](#id-section7) Background work for calling SNPs in the mapped RNASeq reads. 
 * [Page 8 2017-03-30:](#id-section8). Prep for selection scans
 * [Page 9 2017-04-10:](#id-section9).Qiime 16S analysis
-* [Page 10:](#id-section10).
+* [Page 10 2018-01-24:](#id-section10). Welcome to a new semester!
 * [Page 11:](#id-section11).
 * [Page 12:](#id-section12).
 * [Page 13:](#id-section13).
@@ -413,7 +414,7 @@ For next session: come with phyloseq installed in R and test the library
 
 ------
 <div id='id-section10'/>
-### Page 10:
+### Page 10: Welcome to a new semester!
 
 
 
